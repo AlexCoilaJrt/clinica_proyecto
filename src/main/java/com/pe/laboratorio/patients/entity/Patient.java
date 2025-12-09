@@ -24,6 +24,10 @@ public class Patient {
 
     @Column(unique = true)
     private String dni;
+
+    @Column(unique = true)
+    private String email;
+
     private LocalDate dateOfBirth;
     private String gender;
     private String phone;

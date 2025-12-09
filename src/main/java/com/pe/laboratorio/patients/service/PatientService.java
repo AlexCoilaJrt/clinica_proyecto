@@ -18,13 +18,13 @@ public class PatientService {
 
     private final PatientRepository patientRepository;
 
-
     private PatientDTO mapToDTO(Patient patient) {
         return PatientDTO.builder()
                 .id(patient.getId())
                 .firstName(patient.getFirstName())
                 .lastName(patient.getLastName())
                 .dni(patient.getDni())
+                .email(patient.getEmail())
                 .dateOfBirth(patient.getDateOfBirth())
                 .gender(patient.getGender())
                 .phone(patient.getPhone())
@@ -37,6 +37,7 @@ public class PatientService {
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
                 .dni(dto.getDni())
+                .email(dto.getEmail())
                 .dateOfBirth(dto.getDateOfBirth())
                 .gender(dto.getGender())
                 .phone(dto.getPhone())
@@ -65,11 +66,9 @@ public class PatientService {
         return mapToDTO(patient);
     }
 
-
     public PatientDTO updatePatient(Long id, PatientDTO dto) {
         Patient existingPatient = patientRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Paciente no encontrado con ID: " + id));
-
 
         if (!existingPatient.getDni().equals(dto.getDni()) && patientRepository.findByDni(dto.getDni()).isPresent()) {
             throw new ValidationException("Ya existe otro paciente con el DNI: " + dto.getDni());
@@ -78,6 +77,7 @@ public class PatientService {
         existingPatient.setFirstName(dto.getFirstName());
         existingPatient.setLastName(dto.getLastName());
         existingPatient.setDni(dto.getDni());
+        existingPatient.setEmail(dto.getEmail());
         existingPatient.setDateOfBirth(dto.getDateOfBirth());
         existingPatient.setGender(dto.getGender());
         existingPatient.setPhone(dto.getPhone());
@@ -86,7 +86,6 @@ public class PatientService {
         Patient updatedPatient = patientRepository.save(existingPatient);
         return mapToDTO(updatedPatient);
     }
-
 
     public void deletePatient(Long id) {
         if (!patientRepository.existsById(id)) {
