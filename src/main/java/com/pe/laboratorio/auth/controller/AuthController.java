@@ -1,15 +1,17 @@
 package com.pe.laboratorio.auth.controller;
 
-import com.pe.laboratorio.auth.dto.LoginDTO;
-import com.pe.laboratorio.auth.dto.AuthResponse;
-import com.pe.laboratorio.auth.dto.RegisterDTO;
 import com.pe.laboratorio.auth.service.AuthService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.pe.laboratorio.auth.service.dto.AuthResponse;
+import com.pe.laboratorio.auth.service.dto.LoginDTO;
+import com.pe.laboratorio.auth.service.dto.RegisterDTO;
+
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4200")
+
 public class AuthController {
 
     private final AuthService authService;
@@ -29,6 +31,7 @@ public class AuthController {
     public ResponseEntity<String> rutaProtegida() {
         return ResponseEntity.ok("Acceso Exitoso! Bienvenido al Área de Pacientes.");
     }
+
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterDTO registerDto) {
         AuthResponse response = authService.register(registerDto);

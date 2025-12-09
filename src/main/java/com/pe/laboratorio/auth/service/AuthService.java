@@ -1,16 +1,18 @@
 package com.pe.laboratorio.auth.service;
 
-import com.pe.laboratorio.auth.dto.LoginDTO;
-import com.pe.laboratorio.auth.dto.AuthResponse;
-import com.pe.laboratorio.auth.dto.RegisterDTO;
-import com.pe.laboratorio.users.entity.User;
-import com.pe.laboratorio.users.repository.UserRepository;
-import com.pe.laboratorio.exception.AuthException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.pe.laboratorio.auth.service.dto.AuthResponse;
+import com.pe.laboratorio.auth.service.dto.LoginDTO;
+import com.pe.laboratorio.auth.service.dto.RegisterDTO;
+import com.pe.laboratorio.exception.AuthException;
+import com.pe.laboratorio.users.entity.User;
+import com.pe.laboratorio.users.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -22,10 +24,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-
     public AuthResponse login(LoginDTO loginDto) {
-
-
 
         var userOptional = userRepository.findByUsername(loginDto.getUsername());
 
@@ -45,8 +44,7 @@ public class AuthService {
 
         try {
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword())
-            );
+                    new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
         } catch (AuthenticationException e) {
             throw new AuthException("Fallo interno de autenticación.");
         }

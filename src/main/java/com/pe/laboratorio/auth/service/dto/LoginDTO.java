@@ -1,4 +1,4 @@
-package com.pe.laboratorio.auth.dto;
+package com.pe.laboratorio.auth.service.dto;
 
 import lombok.Data;
 
