@@ -1,14 +1,9 @@
 package com.pe.laboratorio.orders.dto;
 
+import com.pe.laboratorio.orders.entity.OrderStatus;
+import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import com.pe.laboratorio.orders.entity.OrderStatus;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Builder

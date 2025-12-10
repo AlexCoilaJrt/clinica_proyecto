@@ -2,6 +2,7 @@ package com.pe.laboratorio.auth.controller;
 
 import com.pe.laboratorio.auth.service.AuthService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,9 +22,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginDTO loginDto) {
+    public ResponseEntity<AuthResponse> login(
+            @RequestBody LoginDTO loginDto,
+            HttpServletRequest request) {
 
-        AuthResponse response = authService.login(loginDto);
+        AuthResponse response = authService.login(loginDto, request);
         return ResponseEntity.ok(response);
     }
 
