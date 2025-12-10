@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/**
- * DTO para información de sesión
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

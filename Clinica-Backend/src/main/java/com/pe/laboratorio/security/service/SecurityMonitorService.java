@@ -16,10 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Servicio para monitoreo y análisis de seguridad
- * Detecta accesos sospechosos, intentos de intrusión y comportamientos anómalos
- */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -28,7 +24,6 @@ public class SecurityMonitorService {
     private final SessionRepository sessionRepository;
     private final IntrusionAttemptRepository intrusionAttemptRepository;
 
-    // Configuraciones de seguridad (puedes moverlas a application.properties)
     @Value("${security.max-failed-attempts:5}")
     private int maxFailedAttempts;
 
@@ -41,9 +36,6 @@ public class SecurityMonitorService {
     @Value("${security.max-concurrent-sessions:3}")
     private int maxConcurrentSessions;
 
-    /**
-     * Verifica si una IP está bloqueada por intentos excesivos
-     */
     public boolean isIpBlocked(String ipAddress) {
         LocalDateTime sinceTime = LocalDateTime.now().minusMinutes(blockDurationMinutes);
         long failedAttempts = intrusionAttemptRepository
@@ -59,9 +51,6 @@ public class SecurityMonitorService {
         return isBlocked;
     }
 
-    /**
-     * Verifica si un usuario tiene intentos fallidos excesivos
-     */
     public boolean hasExcessiveFailedAttempts(String username) {
         LocalDateTime sinceTime = LocalDateTime.now().minusMinutes(blockDurationMinutes);
         long failedAttempts = intrusionAttemptRepository
@@ -77,17 +66,13 @@ public class SecurityMonitorService {
         return hasExcessive;
     }
 
-    /**
-     * Registra un intento fallido de autenticación
-     */
     @Transactional
     public void registerFailedAttempt(String username, String ipAddress, String userAgent, FailureReason reason) {
-        // Contar intentos consecutivos
+
         LocalDateTime sinceTime = LocalDateTime.now().minusMinutes(blockDurationMinutes);
         long consecutiveAttempts = intrusionAttemptRepository
                 .countByIpAddressAndAttemptTimeAfter(ipAddress, sinceTime) + 1;
 
-        // Verificar si este intento causará un bloqueo
         boolean willCauseBlock = consecutiveAttempts >= maxFailedAttempts;
 
         IntrusionAttempt attempt = IntrusionAttempt.builder()
@@ -110,12 +95,9 @@ public class SecurityMonitorService {
         }
     }
 
-    /**
-     * Registra una sesión exitosa
-     */
     @Transactional
     public Session registerSuccessfulLogin(User user, String ipAddress, String userAgent, String sessionToken) {
-        // Verificar si es un acceso sospechoso
+
         boolean isSuspicious = isSuspiciousLogin(user, ipAddress);
 
         Session session = Session.builder()
@@ -137,7 +119,6 @@ public class SecurityMonitorService {
 
         Session savedSession = sessionRepository.save(session);
 
-        // Limpiar intentos fallidos después de login exitoso
         cleanFailedAttemptsForUser(user.getUsername(), ipAddress);
 
         log.info("Sesión registrada - Usuario: {}, IP: {}, Sospechosa: {}",
@@ -146,11 +127,8 @@ public class SecurityMonitorService {
         return savedSession;
     }
 
-    /**
-     * Verifica si un login es sospechoso
-     */
     public boolean isSuspiciousLogin(User user, String currentIp) {
-        // Verificar si existe sesión reciente desde diferente IP
+
         LocalDateTime recentTime = LocalDateTime.now().minusHours(suspiciousIpChangeHours);
 
         boolean differentIpRecently = sessionRepository
@@ -162,7 +140,6 @@ public class SecurityMonitorService {
             return true;
         }
 
-        // Verificar sesiones concurrentes
         long activeSessions = sessionRepository.countByUserAndStatus(user, SessionStatus.ACTIVE);
 
         if (activeSessions >= maxConcurrentSessions) {
@@ -174,9 +151,6 @@ public class SecurityMonitorService {
         return false;
     }
 
-    /**
-     * Limpia intentos fallidos después de un login exitoso
-     */
     @Transactional
     public void cleanFailedAttemptsForUser(String username, String ipAddress) {
         LocalDateTime sinceTime = LocalDateTime.now().minusMinutes(blockDurationMinutes);
@@ -189,9 +163,6 @@ public class SecurityMonitorService {
         }
     }
 
-    /**
-     * Actualiza el último acceso de una sesión
-     */
     @Transactional
     public void updateLastAccess(String sessionToken) {
         sessionRepository.findBySessionToken(sessionToken)
@@ -201,9 +172,6 @@ public class SecurityMonitorService {
                 });
     }
 
-    /**
-     * Cierra una sesión
-     */
     @Transactional
     public void closeSession(String sessionToken) {
         sessionRepository.findBySessionToken(sessionToken)
@@ -215,9 +183,6 @@ public class SecurityMonitorService {
                 });
     }
 
-    /**
-     * Marca una sesión como sospechosa
-     */
     @Transactional
     public void markSessionAsSuspicious(Long sessionId, String reason) {
         sessionRepository.findById(sessionId)
@@ -230,19 +195,35 @@ public class SecurityMonitorService {
                 });
     }
 
-    /**
-     * Obtiene sesiones activas de un usuario
-     */
     public List<Session> getActiveSessions(User user) {
         return sessionRepository.findByUserAndStatus(user, SessionStatus.ACTIVE);
     }
 
-    /**
-     * Obtiene intentos de intrusión recientes
-     */
     public List<IntrusionAttempt> getRecentIntrusionAttempts(int hours) {
         LocalDateTime sinceTime = LocalDateTime.now().minusHours(hours);
         return intrusionAttemptRepository
                 .findByIpAddressAndAttemptTimeAfterOrderByAttemptTimeDesc("*", sinceTime);
+    }
+
+    public int getRemainingAttempts(String ipAddress) {
+        LocalDateTime sinceTime = LocalDateTime.now().minusMinutes(blockDurationMinutes);
+        long failedAttempts = intrusionAttemptRepository
+                .countByIpAddressAndAttemptTimeAfter(ipAddress, sinceTime);
+
+        int remaining = maxFailedAttempts - (int) failedAttempts;
+        return Math.max(0, remaining);
+    }
+
+    public LocalDateTime getUnblockTime(String ipAddress) {
+        LocalDateTime sinceTime = LocalDateTime.now().minusMinutes(blockDurationMinutes);
+
+        List<IntrusionAttempt> attempts = intrusionAttemptRepository
+                .findByIpAddressAndAttemptTimeAfterOrderByAttemptTimeDesc(ipAddress, sinceTime);
+
+        if (attempts.isEmpty()) {
+            return null;
+        }
+
+        return attempts.get(0).getAttemptTime().plusMinutes(blockDurationMinutes);
     }
 }

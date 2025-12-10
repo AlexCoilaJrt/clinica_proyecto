@@ -3,16 +3,9 @@ package com.pe.laboratorio.security.util;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
-/**
- * Utilidad para extraer información del cliente desde el HttpServletRequest
- */
 @Component
 public class ClientInfoExtractor {
 
-    /**
-     * Extrae la dirección IP real del cliente
-     * Tiene en cuenta proxies y load balancers
-     */
     public String getClientIp(HttpServletRequest request) {
         String ipAddress = request.getHeader("X-Forwarded-For");
 
@@ -56,7 +49,6 @@ public class ClientInfoExtractor {
             ipAddress = request.getRemoteAddr();
         }
 
-        // Si hay múltiples IPs, tomar la primera
         if (ipAddress != null && ipAddress.contains(",")) {
             ipAddress = ipAddress.split(",")[0].trim();
         }
@@ -64,17 +56,11 @@ public class ClientInfoExtractor {
         return ipAddress != null ? ipAddress : "unknown";
     }
 
-    /**
-     * Extrae el User-Agent del cliente
-     */
     public String getUserAgent(HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");
         return userAgent != null ? userAgent : "unknown";
     }
 
-    /**
-     * Obtiene información completa del cliente en formato texto
-     */
     public String getClientInfo(HttpServletRequest request) {
         return String.format("IP: %s, User-Agent: %s",
                 getClientIp(request),

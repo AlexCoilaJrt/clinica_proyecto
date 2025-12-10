@@ -14,10 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Controlador para gestión de seguridad y sesiones
- * Solo accesible para administradores
- */
 @RestController
 @RequestMapping("/api/security")
 @RequiredArgsConstructor
@@ -26,9 +22,6 @@ public class SecurityController {
     private final SecurityMonitorService securityMonitorService;
     private final UserRepository userRepository;
 
-    /**
-     * Obtener sesiones activas de un usuario
-     */
     @GetMapping("/sessions/{username}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BIOLOGO')")
     public ResponseEntity<List<SessionInfoDTO>> getUserActiveSessions(@PathVariable String username) {
@@ -54,9 +47,7 @@ public class SecurityController {
         return ResponseEntity.ok(sessionDTOs);
     }
 
-    /**
-     * Obtener intentos de intrusión recientes
-     */
+
     @GetMapping("/intrusions/recent")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BIOLOGO')")
     public ResponseEntity<List<IntrusionAttempt>> getRecentIntrusions(
@@ -65,10 +56,6 @@ public class SecurityController {
         List<IntrusionAttempt> attempts = securityMonitorService.getRecentIntrusionAttempts(hours);
         return ResponseEntity.ok(attempts);
     }
-
-    /**
-     * Cerrar una sesión específica
-     */
     @PostMapping("/sessions/{sessionId}/close")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BIOLOGO')")
     public ResponseEntity<String> closeSession(@PathVariable Long sessionId) {
@@ -77,9 +64,6 @@ public class SecurityController {
         return ResponseEntity.ok("Sesión cerrada exitosamente");
     }
 
-    /**
-     * Marcar sesión como sospechosa
-     */
     @PostMapping("/sessions/{sessionId}/mark-suspicious")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_BIOLOGO')")
     public ResponseEntity<String> markAsSuspicious(

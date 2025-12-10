@@ -19,6 +19,8 @@ import com.pe.laboratorio.users.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -31,11 +33,10 @@ public class AuthService {
     private final ClientInfoExtractor clientInfoExtractor;
 
     public AuthResponse login(LoginDTO loginDto, HttpServletRequest request) {
-        // Extraer información del cliente
+
         String ipAddress = clientInfoExtractor.getClientIp(request);
         String userAgent = clientInfoExtractor.getUserAgent(request);
 
-        // VALIDACIÓN DE SEGURIDAD: Verificar si la IP está bloqueada
         if (securityMonitorService.isIpBlocked(ipAddress)) {
             securityMonitorService.registerFailedAttempt(
                     loginDto.getUsername(), ipAddress, userAgent, FailureReason.IP_BLOCKED);
@@ -45,7 +46,7 @@ public class AuthService {
         var userOptional = userRepository.findByUsername(loginDto.getUsername());
 
         if (userOptional.isEmpty()) {
-            // REGISTRAR INTENTO FALLIDO: Usuario no encontrado
+
             securityMonitorService.registerFailedAttempt(
                     loginDto.getUsername(), ipAddress, userAgent, FailureReason.USER_NOT_FOUND);
             throw new AuthException("Credenciales inválidas (usuario o contraseña incorrectos).");
@@ -54,14 +55,22 @@ public class AuthService {
         User user = userOptional.get();
 
         if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-            // REGISTRAR INTENTO FALLIDO: Contraseña incorrecta
+
             securityMonitorService.registerFailedAttempt(
                     loginDto.getUsername(), ipAddress, userAgent, FailureReason.INVALID_CREDENTIALS);
-            throw new AuthException("Credenciales inválidas...");
+
+            int remainingAttempts = securityMonitorService.getRemainingAttempts(ipAddress);
+
+            LocalDateTime unblockTime = remainingAttempts == 0
+                    ? securityMonitorService.getUnblockTime(ipAddress)
+                    : null;
+
+            String message = generateFailureMessage(remainingAttempts);
+
+            throw new AuthException(message, remainingAttempts, unblockTime);
         }
 
         if (!user.isEnabled()) {
-            // REGISTRAR INTENTO FALLIDO: Cuenta bloqueada
             securityMonitorService.registerFailedAttempt(
                     loginDto.getUsername(), ipAddress, userAgent, FailureReason.ACCOUNT_BLOCKED);
             throw new AuthException("La cuenta ha sido bloqueada. Contacte al administrador.");
@@ -71,16 +80,13 @@ public class AuthService {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
         } catch (AuthenticationException e) {
-            // REGISTRAR INTENTO FALLIDO: Error de autenticación
             securityMonitorService.registerFailedAttempt(
                     loginDto.getUsername(), ipAddress, userAgent, FailureReason.AUTHENTICATION_ERROR);
             throw new AuthException("Fallo interno de autenticación.");
         }
 
-        // Generar token JWT
         String token = jwtService.generateToken(user.getUsername());
 
-        // REGISTRAR SESIÓN EXITOSA con análisis de seguridad
         securityMonitorService.registerSuccessfulLogin(user, ipAddress, userAgent, token);
 
         return new AuthResponse(token, "Sesión iniciada correctamente", user.getRole());
@@ -102,5 +108,20 @@ public class AuthService {
 
         String token = jwtService.generateToken(newUser.getUsername());
         return new AuthResponse(token, "Usuario registrado exitosamente", assignedRole);
+    }
+
+    private String generateFailureMessage(int remainingAttempts) {
+        if (remainingAttempts == 0) {
+            return "🚫 Intentos agotados. Tu IP ha sido bloqueada temporalmente por seguridad. " +
+                    "Intenta nuevamente en 15 minutos o contacta al administrador.";
+        } else if (remainingAttempts == 1) {
+            return "⚠️ ÚLTIMO INTENTO. Credenciales inválidas. " +
+                    "Si fallas nuevamente, tu IP será bloqueada por 15 minutos.";
+        } else if (remainingAttempts == 2) {
+            return "⚠️ Credenciales inválidas. Te quedan " + remainingAttempts +
+                    " intentos antes del bloqueo temporal.";
+        } else {
+            return "Credenciales inválidas. Verifica tu usuario y contraseña.";
+        }
     }
 }

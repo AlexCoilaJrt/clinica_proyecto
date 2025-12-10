@@ -21,5 +21,6 @@ public class Unit {
     private String description;
 
     @Column(name = "is_enabled")
+    @Builder.Default
     private Boolean isEnabled = true;
 }

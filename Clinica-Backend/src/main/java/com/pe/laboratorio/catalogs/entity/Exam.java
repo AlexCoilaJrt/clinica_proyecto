@@ -29,5 +29,6 @@ public class Exam {
     private ExamType examType;
 
     @Column(name = "is_enabled")
+    @Builder.Default
     private Boolean isEnabled = true;
 }

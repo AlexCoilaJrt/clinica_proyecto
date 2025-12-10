@@ -53,7 +53,6 @@ public class OrderServiceImpl implements OrderService {
 
         order = orderRepository.save(order);
 
-        // Create OrderExam entries
         for (Long examId : request.getExamIds()) {
             Exam exam = examRepository.findById(examId)
                     .orElseThrow(() -> new ResourceNotFoundException("Examen no encontrado con ID: " + examId));

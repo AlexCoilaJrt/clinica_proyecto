@@ -36,7 +36,6 @@ public class ResultServiceImpl implements ResultService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Examen de orden no encontrado con ID: " + request.getOrderExamId()));
 
-        // Check if result already exists for this order exam
         if (resultRepository.findByOrderExamId(request.getOrderExamId()).isPresent()) {
             throw new ValidationException("Ya existe un resultado para este examen de orden");
         }
