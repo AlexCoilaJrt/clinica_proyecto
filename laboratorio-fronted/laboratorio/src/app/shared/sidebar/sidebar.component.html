@@ -1,0 +1,140 @@
+<aside class="w-64 bg-[#2E3B8E] text-white flex flex-col h-screen sticky top-0">
+    <!-- Menú de navegación -->
+    <nav class="flex-1 px-3 pt-6 pb-4 space-y-1 overflow-y-auto">
+        <!-- Usuarios (expandible) -->
+        <div>
+            <button (click)="toggleUsuarios()" [class.bg-blue-800]="usuariosExpandido"
+                class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-md hover:bg-blue-800 transition duration-200 text-left">
+
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.897M16 11V7a4 4 0 10-8 0v4m.867 1.334L12 17l3.133-4.666A4 4 0 1115.133 13.334z" />
+                </svg>
+
+                <span class="flex-1">Usuarios</span>
+
+                <svg class="w-4 h-4 transition-transform duration-200" [class.rotate-180]="usuariosExpandido"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+
+            <div *ngIf="usuariosExpandido" class="ml-8 mt-1 space-y-1" @slideDown>
+
+                <button routerLink="/usuarios/gestion"
+                    [class.bg-green-600]="rutaActual === '/usuarios/gestion'"
+                    [class.hover:bg-blue-800]="rutaActual !== '/usuarios/gestion'"
+                    class="w-full flex items-center space-x-2 px-3 py-2 rounded-md transition text-left">
+                    <div class="w-2 h-2 bg-white rounded-full"></div>
+                    <span class="text-sm">Gestión de usuarios</span>
+                </button>
+
+                <button (click)="navegarA('/usuarios/roles')" [class.bg-green-600]="rutaActual === '/usuarios/roles'"
+                    [class.hover:bg-blue-800]="rutaActual !== '/usuarios/roles'"
+                    class="w-full flex items-center space-x-2 px-3 py-2 rounded-md transition text-left">
+                    <div class="w-2 h-2 bg-white rounded-full"></div>
+                    <span class="text-sm">Roles</span>
+                </button>
+
+                <button (click)="navegarA('/usuarios/permisos')"
+                    [class.bg-green-600]="rutaActual === '/usuarios/permisos'"
+                    [class.hover:bg-blue-800]="rutaActual !== '/usuarios/permisos'"
+                    class="w-full flex items-center space-x-2 px-3 py-2 rounded-md transition text-left">
+                    <div class="w-2 h-2 bg-white rounded-full"></div>
+                    <span class="text-sm">Permisos</span>
+                </button>
+
+            </div>
+        </div>
+        <!-- Configuración (expandible) -->
+        <div>
+            <button (click)="toggleConfiguracion()" [class.bg-blue-800]="configuracionExpandida"
+                class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-md hover:bg-blue-800 transition duration-200 text-left">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span class="flex-1">Configuración</span>
+                <svg class="w-4 h-4 transition-transform duration-200" [class.rotate-180]="configuracionExpandida"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+
+            <!-- Submenú de Configuración -->
+            <div *ngIf="configuracionExpandida" class="ml-8 mt-1 space-y-1" @slideDown>
+                <button (click)="navegarA('/cambio-sucursal')" [class.bg-green-600]="rutaActual === '/cambio-sucursal'"
+                    [class.hover:bg-blue-800]="rutaActual !== '/cambio-sucursal'"
+                    class="w-full flex items-center space-x-2 px-3 py-2 rounded-md transition text-left">
+                    <div class="w-2 h-2 bg-white rounded-full"></div>
+                    <span class="text-sm">Cambio de sucursal</span>
+                </button>
+                <button (click)="navegarA('/cie10')" [class.bg-green-600]="rutaActual === '/cie10'"
+                    [class.hover:bg-blue-800]="rutaActual !== '/cie10'"
+                    class="w-full flex items-center space-x-2 px-3 py-2 rounded-md transition text-left">
+                    <div class="w-2 h-2 bg-white rounded-full"></div>
+                    <span class="text-sm">Cie10</span>
+                </button>
+                <button (click)="navegarA('/datos-medicos')" [class.bg-green-600]="rutaActual === '/datos-medicos'"
+                    [class.hover:bg-blue-800]="rutaActual !== '/datos-medicos'"
+                    class="w-full flex items-center space-x-2 px-3 py-2 rounded-md transition text-left">
+                    <div class="w-2 h-2 bg-white rounded-full"></div>
+                    <span class="text-sm">Datos médico</span>
+                </button>
+                <button (click)="navegarA('/horario')" [class.bg-green-600]="rutaActual === '/horario'"
+                    [class.hover:bg-blue-800]="rutaActual !== '/horario'"
+                    class="w-full flex items-center space-x-2 px-3 py-2 rounded-md transition text-left">
+                    <div class="w-2 h-2 bg-white rounded-full"></div>
+                    <span class="text-sm">Horario</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Reportes -->
+        <button [class.bg-blue-800]="rutaActual === '/reportes'"
+            class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-md hover:bg-blue-800 transition duration-200 text-left">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span class="flex-1">Reportes</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </button>
+
+        <!-- Pacientes -->
+        <button [class.bg-blue-800]="rutaActual === '/pacientes'"
+            class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-md hover:bg-blue-800 transition duration-200 text-left">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <span class="flex-1">Pacientes</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </button>
+
+        <!-- Citas -->
+        <button [class.bg-blue-800]="rutaActual === '/citas'"
+            class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-md hover:bg-blue-800 transition duration-200 text-left">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span class="flex-1">Citas</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </button>
+    </nav>
+
+    <!-- Footer del sidebar (opcional) -->
+    <div class="p-4 border-t border-blue-800">
+        <div class="text-xs text-blue-200 text-center">
+            <p>Sistema de Gestión Clínica</p>
+            <p class="mt-1">v1.0.0</p>
+        </div>
+    </div>
+</aside>

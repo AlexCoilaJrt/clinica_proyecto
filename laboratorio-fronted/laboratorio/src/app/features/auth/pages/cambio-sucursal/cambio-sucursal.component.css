@@ -1,0 +1,59 @@
+/* Animación para la alerta */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Transición suave para el menú expandible */
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* Estilos adicionales para mejorar la apariencia */
+select option {
+  padding: 10px;
+}
+
+/* Mejorar la apariencia del select en diferentes navegadores */
+select::-ms-expand {
+  display: none;
+}
+
+/* Hover effects suaves */
+button {
+  transition: all 0.2s ease;
+}
+
+/* Sombras suaves para inputs en focus */
+input:focus,
+select:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Estilo para el scrollbar del sidebar si es necesario */
+aside::-webkit-scrollbar {
+  width: 6px;
+}
+
+aside::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+aside::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+aside::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
