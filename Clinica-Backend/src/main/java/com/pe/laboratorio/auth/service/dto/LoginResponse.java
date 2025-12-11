@@ -1,6 +1,5 @@
-package com.pe.laboratorio.users.dto;
+package com.pe.laboratorio.auth.service.dto;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
@@ -12,18 +11,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserResponse {
+public class LoginResponse {
 
-    private Long id;
+    private String token;
+    private String type; // "Bearer"
+    private Long userId;
     private String username;
     private String email;
     private String firstName;
     private String lastName;
-    private String phone;
-    private Boolean active;
     private Set<String> roles;
     private Set<String> permissions;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime lastLogin;
 }

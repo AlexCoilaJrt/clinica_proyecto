@@ -1,7 +1,9 @@
-package com.pe.laboratorio.users.dto;
+package com.pe.laboratorio.roles.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+
+import com.pe.laboratorio.permissions.dto.PermissionResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,18 +14,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserResponse {
+public class RoleResponse {
 
     private Long id;
-    private String username;
-    private String email;
-    private String firstName;
-    private String lastName;
-    private String phone;
+    private String name;
+    private String description;
     private Boolean active;
-    private Set<String> roles;
-    private Set<String> permissions;
+    private Set<PermissionResponse> permissions;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private LocalDateTime lastLogin;
 }

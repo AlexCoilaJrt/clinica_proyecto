@@ -1,43 +1,109 @@
 package com.pe.laboratorio.auth.controller;
 
-import com.pe.laboratorio.auth.service.AuthService;
-
-import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.pe.laboratorio.auth.service.dto.AuthResponse;
-import com.pe.laboratorio.auth.service.dto.LoginDTO;
-import com.pe.laboratorio.auth.service.dto.RegisterDTO;
+import com.pe.laboratorio.auth.service.AuthService;
+import com.pe.laboratorio.auth.service.dto.LoginRequest;
+import com.pe.laboratorio.auth.service.dto.LoginResponse;
+import com.pe.laboratorio.auth.service.dto.RegisterRequest;
+import com.pe.laboratorio.auth.service.dto.RegisterResponse;
+import com.pe.laboratorio.shared.dto.ApiResponse;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/auth")
-
+@CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
-
+    /**
+     * Login de usuario
+     * POST /api/v1/auth/login
+     */
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(
-            @RequestBody LoginDTO loginDto,
-            HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<LoginResponse>> login(
+            @Valid @RequestBody LoginRequest request) {
 
-        AuthResponse response = authService.login(loginDto, request);
-        return ResponseEntity.ok(response);
+        LoginResponse loginResponse = authService.login(request);
+
+        return ResponseEntity.ok(ApiResponse.<LoginResponse>builder()
+                .success(true)
+                .message("Login exitoso")
+                .data(loginResponse)
+                .build());
     }
 
-    @GetMapping("/test/protegida")
-    public ResponseEntity<String> rutaProtegida() {
-        return ResponseEntity.ok("Acceso Exitoso! Bienvenido al Área de Pacientes.");
-    }
-
+    /**
+     * Registro de nuevo usuario
+     * POST /api/v1/auth/register
+     */
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterDTO registerDto) {
-        AuthResponse response = authService.register(registerDto);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ApiResponse<RegisterResponse>> register(
+            @Valid @RequestBody RegisterRequest request) {
+
+        RegisterResponse registerResponse = authService.register(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.<RegisterResponse>builder()
+                        .success(true)
+                        .message("Usuario registrado exitosamente")
+                        .data(registerResponse)
+                        .build());
+    }
+
+    /**
+     * Logout (opcional - para invalidar token)
+     * POST /api/v1/auth/logout
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(
+            @RequestHeader("Authorization") String token) {
+
+        // Extraer el token sin el prefijo "Bearer "
+        String jwtToken = token.substring(7);
+        authService.logout(jwtToken);
+
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .success(true)
+                .message("Logout exitoso")
+                .build());
+    }
+
+    /**
+     * Endpoint de prueba protegido
+     * GET /api/v1/auth/test/protegida
+     */
+    @GetMapping("/test/protegida")
+    public ResponseEntity<ApiResponse<String>> rutaProtegida() {
+        return ResponseEntity.ok(ApiResponse.<String>builder()
+                .success(true)
+                .message("Acceso exitoso")
+                .data("¡Bienvenido al área protegida!")
+                .build());
+    }
+
+    /**
+     * Health check
+     * GET /api/v1/auth/health
+     */
+    @GetMapping("/health")
+    public ResponseEntity<ApiResponse<String>> health() {
+        return ResponseEntity.ok(ApiResponse.<String>builder()
+                .success(true)
+                .message("Auth service is running")
+                .data("OK")
+                .build());
     }
 }
