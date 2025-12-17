@@ -32,4 +32,11 @@ public class AuthException extends RuntimeException {
         this.blocked = remainingAttempts == 0;
         this.unblockTime = unblockTime;
     }
+
+    public AuthException(String message, int remainingAttempts, boolean blocked, LocalDateTime unblockTime) {
+        super(message);
+        this.remainingAttempts = remainingAttempts;
+        this.blocked = blocked;
+        this.unblockTime = unblockTime;
+    }
 }

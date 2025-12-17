@@ -22,6 +22,9 @@ import com.pe.laboratorio.roles.entity.Role;
 import com.pe.laboratorio.roles.repository.RoleRepository;
 import com.pe.laboratorio.users.entity.DatosPersonales;
 import com.pe.laboratorio.users.repository.DatosPersonalesRepository;
+import com.pe.laboratorio.security.service.SecurityMonitorService;
+import com.pe.laboratorio.security.entity.FailureReason;
+import com.pe.laboratorio.security.util.HttpUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -38,32 +41,87 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final SecurityMonitorService securityMonitorService;
 
-    public LoginResponse login(LoginRequest request, HttpServletRequest httpRequest) { // <- AÑADIDO: HttpServletRequest
-                                                                                       // httpRequest
-        log.info("Login attempt for user: {}", request.getUsername());
+    public LoginResponse login(LoginRequest request, HttpServletRequest httpRequest) {
+        String ipAddress = HttpUtils.getClientIpAddress(httpRequest);
+        String userAgent = HttpUtils.getUserAgent(httpRequest);
 
-        // Validar credenciales con AuthenticationManager
+        log.info("Login attempt for user: {} from IP: {}", request.getUsername(), ipAddress);
+
+        // 1. VERIFICAR SI LA IP ESTÁ BLOQUEADA
+        if (securityMonitorService.isIpBlocked(ipAddress)) {
+            log.warn("Login attempt from blocked IP: {}", ipAddress);
+
+            int remainingAttempts = securityMonitorService.getRemainingAttempts(ipAddress);
+            var unblockTime = securityMonitorService.getUnblockTime(ipAddress);
+
+            securityMonitorService.registerFailedAttempt(
+                    request.getUsername(),
+                    ipAddress,
+                    userAgent,
+                    FailureReason.IP_BLOCKED);
+
+            throw new AuthException(
+                    "IP bloqueada temporalmente por intentos sospechosos. Intente nuevamente más tarde.",
+                    remainingAttempts,
+                    true,
+                    unblockTime);
+        }
+
+        // 2. VALIDAR CREDENCIALES CON AuthenticationManager
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getUsername(),
                             request.getPassword()));
         } catch (AuthenticationException e) {
-            log.error("Authentication failed for user: {}", request.getUsername());
-            throw new AuthException("Credenciales inválidas (usuario o contraseña incorrectos)");
+            log.error("Authentication failed for user: {} from IP: {}", request.getUsername(), ipAddress);
+
+            // Registrar intento fallido
+            securityMonitorService.registerFailedAttempt(
+                    request.getUsername(),
+                    ipAddress,
+                    userAgent,
+                    FailureReason.INVALID_CREDENTIALS);
+
+            // Calcular intentos restantes
+            int remainingAttempts = securityMonitorService.getRemainingAttempts(ipAddress);
+
+            // Mensajes progresivos
+            String message;
+            if (remainingAttempts == 0) {
+                message = "Credenciales inválidas. Su IP ha sido bloqueada temporalmente por intentos excesivos.";
+            } else if (remainingAttempts == 1) {
+                message = "Credenciales inválidas. ⚠️ ÚLTIMO INTENTO antes del bloqueo.";
+            } else if (remainingAttempts <= 2) {
+                message = String.format("Credenciales inválidas. Le quedan %d intentos.", remainingAttempts);
+            } else {
+                message = "Credenciales inválidas. Usuario o contraseña incorrectos.";
+            }
+
+            throw new AuthException(message, remainingAttempts, remainingAttempts == 0, null);
         }
 
-        // Si quieres usar el httpRequest, puedes hacerlo aquí, por ejemplo:
-        // log.info("Login from IP: {}", httpRequest.getRemoteAddr());
-
-        // Cargar usuario con roles y permisos
+        // 3. CARGAR USUARIO CON ROLES Y PERMISOS
         DatosPersonales user = datosPersonalesRepository.findByLoginWithRoles(request.getUsername())
-                .orElseThrow(() -> new AuthException("Usuario no encontrado"));
+                .orElseThrow(() -> {
+                    securityMonitorService.registerFailedAttempt(
+                            request.getUsername(),
+                            ipAddress,
+                            userAgent,
+                            FailureReason.USER_NOT_FOUND);
+                    return new AuthException("Usuario no encontrado");
+                });
 
-        // Verificar si la cuenta está activa
+        // 4. VERIFICAR SI LA CUENTA ESTÁ ACTIVA
         if (!user.getActive()) {
             log.warn("Attempt to login with inactive account: {}", request.getUsername());
+            securityMonitorService.registerFailedAttempt(
+                    request.getUsername(),
+                    ipAddress,
+                    userAgent,
+                    FailureReason.ACCOUNT_BLOCKED);
             throw new AuthException("La cuenta ha sido bloqueada. Contacte al administrador.");
         }
 
@@ -71,8 +129,9 @@ public class AuthService {
         user.setLastLogin(LocalDateTime.now());
         datosPersonalesRepository.save(user);
 
-        // Generar token JWT
+        // 5. REGISTRAR SESIÓN EXITOSA
         String token = jwtService.generateToken(user);
+        securityMonitorService.registerSuccessfulLogin(user, ipAddress, userAgent, token);
 
         // Obtener nombres de roles
         Set<String> roleNames = user.getRoles().stream()
