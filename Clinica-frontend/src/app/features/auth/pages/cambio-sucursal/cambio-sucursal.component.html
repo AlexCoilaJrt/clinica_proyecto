@@ -1,0 +1,101 @@
+<!-- Header Component -->
+<app-header [breadcrumb]="'Configuración / Cambio de sucursal'" (onCerrarSesion)="cerrarSesion()">
+</app-header>
+<div class="min-h-screen bg-gray-50 flex">
+    <!-- Sidebar Component -->
+    <app-sidebar></app-sidebar>
+
+    <!-- Contenido Principal -->
+    <div class="flex-1 flex flex-col">
+
+
+        <!-- Alerta de éxito/error -->
+        <div *ngIf="alertaMostrada" class="mx-6 mt-6 animate-fade-in">
+            <div [class.bg-green-50]="alertaTipo === 'success'" [class.bg-red-50]="alertaTipo === 'error'"
+                [class.border-green-400]="alertaTipo === 'success'" [class.border-red-400]="alertaTipo === 'error'"
+                class="p-4 border-l-4 rounded-r-md flex items-center justify-between shadow-sm">
+                <div class="flex items-center space-x-3">
+                    <svg *ngIf="alertaTipo === 'success'" class="w-6 h-6 text-green-600" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <svg *ngIf="alertaTipo === 'error'" class="w-6 h-6 text-red-600" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span [class.text-green-800]="alertaTipo === 'success'"
+                        [class.text-red-800]="alertaTipo === 'error'" class="font-medium text-sm">
+                        {{ alertaMensaje }}
+                    </span>
+                </div>
+                <button (click)="alertaMostrada = false" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <main class="flex-1 p-6">
+            <div class="max-w-4xl mx-auto bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                <!-- Header del formulario -->
+                <div class="bg-white px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-base font-semibold text-gray-800">Cambio de sucursal</h2>
+                </div>
+
+                <!-- Contenido del formulario -->
+                <div class="p-8">
+                    <form class="space-y-6">
+                        <!-- Campo Usuario -->
+                        <div class="flex items-center">
+                            <label class="w-40 text-gray-700 font-medium text-sm">Usuario</label>
+                            <input type="text" [(ngModel)]="usuario" name="usuario" placeholder="Usuario"
+                                class="flex-1 px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" />
+                        </div>
+
+                        <!-- Campo Contraseña -->
+                        <div class="flex items-center">
+                            <label class="w-40 text-gray-700 font-medium text-sm">Contraseña</label>
+                            <input type="password" [(ngModel)]="nuevaContrasena" name="nuevaContrasena"
+                                placeholder="Contraseña"
+                                class="flex-1 px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" />
+                        </div>
+
+                        <!-- Campo Sucursales -->
+                        <div class="flex items-center">
+                            <label class="w-40 text-gray-700 font-medium text-sm">Sucursales</label>
+                            <div class="flex-1 relative">
+                                <select [(ngModel)]="sucursalSeleccionada" name="sucursalSeleccionada"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white text-sm text-gray-500">
+                                    <option value="">Sucursal principal</option>
+                                    <option *ngFor="let sucursal of sucursales" [value]="sucursal.nombre">
+                                        {{ sucursal.nombre }}
+                                    </option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botón Guardar -->
+                        <div class="flex justify-end pt-4">
+                            <button type="button" (click)="guardarCambios()"
+                                class="px-10 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md transition duration-200 text-sm shadow-sm">
+                                Guardar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>

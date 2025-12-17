@@ -1,0 +1,50 @@
+<header class="bg-white border-b-4 border-orange-400">
+    <div class="px-6 py-4 flex items-center justify-between">
+        <img src="/Logo.png" alt="Logo Laboratorio" class="w-[203px] h-[52px] mr-2">
+        <div class="flex items-center space-x-6">
+            <!-- Contador de sesión con colores dinámicos -->
+            <span class="text-sm">
+                Su sesión expira en: 
+                <span class="font-semibold transition-colors duration-300"
+                      [ngClass]="{
+                        'text-green-600': tiempoRestanteMs > 300000,
+                        'text-orange-500': tiempoRestanteMs <= 300000 && tiempoRestanteMs > 60000,
+                        'text-red-600': tiempoRestanteMs <= 60000
+                      }">
+                    {{ tiempoFormateado }}
+                </span>
+            </span>
+
+            <div class="flex items-center space-x-3">
+                <span class="text-gray-700 text-sm">
+                    Bienvenido, <span class="font-semibold">{{ usuarioActual }}</span>
+                </span>
+                <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-400 transition"
+                    (click)="toggleMenuUsuario()">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </div>
+
+                <!-- Menú desplegable usuario -->
+                <div *ngIf="menuUsuarioAbierto"
+                    class="absolute top-16 right-6 bg-white border border-gray-200 rounded-lg shadow-lg py-2 w-48 z-50">
+                    <button (click)="verPerfil()"
+                        class="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-700 transition">
+                        Mi perfil
+                    </button>
+                    <button (click)="cambiarContrasena()"
+                        class="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-700 transition">
+                        Cambiar contraseña
+                    </button>
+                    <hr class="my-1">
+                    <button (click)="cerrarSesion()"
+                        class="w-full text-left px-4 py-2 hover:bg-red-50 text-sm text-red-600 transition">
+                        Cerrar sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
