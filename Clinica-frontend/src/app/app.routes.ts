@@ -11,4 +11,5 @@ export const routes: Routes = [
         path: 'configuraciones',
         loadChildren: () => USUARIOS_ROUTES
     },
+    
 ];

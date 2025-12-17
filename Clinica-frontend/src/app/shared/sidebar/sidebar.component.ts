@@ -28,10 +28,12 @@ export class SidebarComponent implements OnInit {
   configuracionesExpandido: boolean = false;
   procesosExpandido: boolean = false;
   reportesExpandido: boolean = false;
-  
+
   // Ruta actual
   rutaActual: string = '';
-
+  usuarioActual: string = 'Usuario';
+  userGender: string = 'null';
+    bien: string = 'null';
   constructor(private router: Router) {
     // Escuchar cambios de ruta
     this.router.events.pipe(
@@ -43,10 +45,35 @@ export class SidebarComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.cargarPerfil();
     this.rutaActual = this.router.url;
     this.expandirMenuSegunRuta(this.rutaActual);
   }
-
+  cargarPerfil(): void {
+    const userStorage = localStorage.getItem('currentUser');
+    if (userStorage) {
+      try {
+        const user = JSON.parse(userStorage);
+        this.usuarioActual = user.firstName + ' ' + (user.lastName || '');
+        console.log('Usuario cargado en sidebar:', this.usuarioActual);
+        this.userGender = user.sexo || 'null';
+      } catch (e) {
+        this.usuarioActual = 'Usuario';
+      }
+    }
+  }
+  getProfileImage(): string {
+  if (this.userGender === 'M') {
+    this.bien = 'Bienvenido';
+    return '/male-avatar.jpg';
+  } else if (this.userGender === 'F') {
+    this.bien = 'Bienvenida';
+    return '/female-avatar.png';
+  } else {
+    this.bien = 'Bienvenide';
+    return '/default-avatar.png';
+  }
+}
   // Expandir automáticamente el menú según la ruta actual
   expandirMenuSegunRuta(url: string) {
     if (url.includes('/configuraciones')) {
