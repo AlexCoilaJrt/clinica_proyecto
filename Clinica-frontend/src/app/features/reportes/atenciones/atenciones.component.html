@@ -19,14 +19,16 @@
             </div>
         </div>
 
-        <!-- Filtros de Büsqueda -->
-        <div class="bg-[#2563EB] text-white p-4 rounded-lg shadow-md mb-6">
-            <h2 class="text-lg font-semibold mb-4 flex justify-between items-center">
-                <span>Filtros de Búsqueda</span>
+        <!-- Filtros de Búsqueda -->
+        <div class="bg-white rounded-lg shadow-md mb-6 overflow-hidden">
+            <!-- Header con fondo Azul -->
+            <div class="bg-[#2563EB] px-6 py-3 flex justify-between items-center text-white">
+                <h2 class="text-lg font-semibold">Filtros de Búsqueda</h2>
+
                 <!-- Botones de Exportación -->
                 <div class="flex space-x-2">
                     <button (click)="exportarPDF()"
-                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition flex items-center space-x-2 text-sm">
+                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md transition flex items-center space-x-2 text-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -34,7 +36,7 @@
                         <span>PDF</span>
                     </button>
                     <button (click)="exportarExcel()"
-                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition flex items-center space-x-2 text-sm">
+                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md transition flex items-center space-x-2 text-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -42,54 +44,57 @@
                         <span>Excel</span>
                     </button>
                 </div>
-            </h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <!-- Fecha desde -->
-                <div>
-                    <label class="block text-sm font-medium mb-1">Fecha desde:</label>
-                    <input type="date" [(ngModel)]="fechaInicio" (change)="aplicarFiltros()"
-                        class="w-full px-3 py-2 border rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="dd/mm/aaaa">
-                </div>
-
-                <!-- Fecha hasta -->
-                <div>
-                    <label class="block text-sm font-medium mb-1">Fecha hasta:</label>
-                    <input type="date" [(ngModel)]="fechaFin" (change)="aplicarFiltros()"
-                        class="w-full px-3 py-2 border rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="dd/mm/aaaa">
-                </div>
-
-                <!-- DNI / Paciente -->
-                <div>
-                    <label class="block text-sm font-medium mb-1">DNI / Paciente:</label>
-                    <input type="text" [(ngModel)]="dniPaciente" (input)="aplicarFiltros()"
-                        class="w-full px-3 py-2 border rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="DNI o nombre">
-                </div>
-
-                <!-- Estado Solicitud -->
-                <div>
-                    <label class="block text-sm font-medium mb-1">Estado Solicitud:</label>
-                    <select [(ngModel)]="estadoSelected" (change)="aplicarFiltros()"
-                        class="w-full px-3 py-2 border rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Todos</option>
-                        <option value="PENDIENTE">Pendiente</option>
-                        <option value="EN_PROCESO">En Proceso</option>
-                        <option value="PROCESADO">Procesado</option>
-                        <option value="VALIDADO">Validado</option>
-                        <option value="ENTREGADO">Entregado</option>
-                    </select>
-                </div>
             </div>
 
-            <!-- Botón Buscar -->
-            <div class="mt-4 flex justify-end">
-                <button (click)="buscar()" [disabled]="cargando"
-                    class="bg-[#6366F1] hover:bg-[#5558E3] text-white font-semibold py-2 px-6 rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed">
-                    {{ cargando ? 'Buscando...' : 'Buscar' }}
-                </button>
+            <!-- Body blanco con inputs alineados -->
+            <div class="p-6">
+                <div class="flex flex-wrap items-end gap-4">
+                    <!-- Fecha desde -->
+                    <div class="w-full sm:w-48">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha desde:</label>
+                        <input type="date" [(ngModel)]="fechaInicio" (change)="aplicarFiltros()"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                            placeholder="dd/mm/aaaa">
+                    </div>
+
+                    <!-- Fecha hasta -->
+                    <div class="w-full sm:w-48">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha hasta:</label>
+                        <input type="date" [(ngModel)]="fechaFin" (change)="aplicarFiltros()"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                            placeholder="dd/mm/aaaa">
+                    </div>
+
+                    <!-- DNI / Paciente -->
+                    <div class="w-full sm:w-64">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">DNI / Paciente:</label>
+                        <input type="text" [(ngModel)]="dniPaciente" (input)="aplicarFiltros()"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                            placeholder="DNI o nombre">
+                    </div>
+
+                    <!-- Estado Solicitud -->
+                    <div class="w-full sm:w-56">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Estado Solicitud:</label>
+                        <select [(ngModel)]="estadoSelected" (change)="aplicarFiltros()"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+                            <option value="">Todos</option>
+                            <option value="PENDIENTE">Pendiente</option>
+                            <option value="EN_PROCESO">En Proceso</option>
+                            <option value="PROCESADO">Procesado</option>
+                            <option value="VALIDADO">Validado</option>
+                            <option value="ENTREGADO">Entregado</option>
+                        </select>
+                    </div>
+
+                    <!-- Botón Buscar -->
+                    <div class="flex-none">
+                        <button (click)="buscar()" [disabled]="cargando"
+                            class="h-[42px] bg-[#6366F1] hover:bg-[#5558E3] text-white font-medium px-6 rounded-md transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+                            {{ cargando ? 'Buscando...' : 'Buscar' }}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
