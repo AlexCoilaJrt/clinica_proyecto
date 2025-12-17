@@ -31,6 +31,7 @@ export interface LoginData {
     email: string;
     firstName: string;
     lastName: string;
+    sexo: string;
     roles: string[];  // Array of role names
     permissions: string[];  // Array of permission names
 }
@@ -38,8 +39,11 @@ export interface LoginData {
 
 export interface Usuario {
     username: string;
+    firstName: string;
+    lastName: string;
     rol: string;
     token: string;
+    sexo: string;
 }
 
 
@@ -47,7 +51,7 @@ export interface Usuario {
     providedIn: 'root'
 })
 export class AuthService {
-    private apiUrl = 'http://localhost:8080/api/auth'; // Cambia esto según tu API
+    private apiUrl = 'http://localhost:8080/api/auth';
     private currentUserSubject: BehaviorSubject<Usuario | null>;
     public currentUser: Observable<Usuario | null>;
 
@@ -84,7 +88,6 @@ export class AuthService {
             username,
             password
         }).pipe(
-            // Extraer el 'data' de la respuesta envuelta
             map(apiResponse => apiResponse.data),
             tap(loginData => {
                 console.log('Backend login data:', loginData);
@@ -98,7 +101,10 @@ export class AuthService {
                 const user: Usuario = {
                     username: loginData.username,
                     rol: rolPrincipal,
-                    token: loginData.token
+                    token: loginData.token,
+                    sexo: loginData.sexo,
+                    firstName: loginData.firstName,
+                    lastName: loginData.lastName
                 };
 
                 // Guardar en localStorage

@@ -27,6 +27,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private syncSubscription: Subscription | undefined;
 
   usuarioActual: string = 'Usuario';
+  userGender: string = 'null';
+  bien: string = 'null';
   menuUsuarioAbierto: boolean = false;
 
   // Umbral de advertencia (5 minutos)
@@ -41,26 +43,38 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.iniciarTemporizador();
-    this.cargarUsuario();
+    this.cargarPerfil();
 
     // Cerrar menú al hacer clic fuera
     document.addEventListener('click', this.cerrarMenuUsuarioFuera.bind(this));
   }
 
-  cargarUsuario(): void {
+  cargarPerfil(): void {
     const userStorage = localStorage.getItem('currentUser');
     if (userStorage) {
       try {
         const user = JSON.parse(userStorage);
-        this.usuarioActual = user.username || 'Usuario';
+        this.usuarioActual = user.firstName + ' ' + (user.lastName || '');
+        console.log('Usuario cargado en sidebar:', this.usuarioActual);
+        this.userGender = user.sexo || 'null';
       } catch (e) {
         this.usuarioActual = 'Usuario';
       }
     }
   }
 
-  // ...
-
+  getProfileImage(): string {
+  if (this.userGender === 'M') {
+    this.bien = 'Bienvenido';
+    return '/male-avatar.jpg';
+  } else if (this.userGender === 'F') {
+    this.bien = 'Bienvenida';
+    return '/female-avatar.png';
+  } else {
+    this.bien = 'Bienvenide';
+    return '/default-avatar.png';
+  }
+}
   iniciarTemporizador(): void {
     // Obtener tiempo inicial del servidor inmediatamente
     this.sincronizarConServidor();

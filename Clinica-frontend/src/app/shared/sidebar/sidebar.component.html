@@ -1,17 +1,25 @@
 <aside class="w-[227px] bg-[#27348A] text-white flex flex-col h-screen sticky top-0">
     <!-- Menú de navegación -->
-    <div class="welcome-card">
-        <div class="profile-picture">
-            <img src="URL_DE_TU_IMAGEN_DE_PERFIL" alt="Foto de Perfil">
+    <div class="flex items-center gap-4 p-4 bg-[#111B5F] text-white welcome-card">
+        <div class="flex-shrink-0 profile-picture">
+            <img [src]="getProfileImage()" alt="Foto de Perfil"
+                class="w-[60px] h-[60px] rounded-full border-2 border-gray-300 object-cover">
         </div>
-        
-        <div class="welcome-info">
-            <div class="welcome-text">Bienvenido</div>
-            <div class="user-name">ibanez</div>
-            <div class="action-icons">
-                <a href="#" class="action-icon" title="Inicio"><i class="fas fa-home"></i></a>
-                <a href="#" class="action-icon" title="Perfil"><i class="fas fa-user"></i></a>
-                <a href="#" class="action-icon" title="Salir"><i class="fas fa-sign-out-alt"></i></a>
+
+        <div class="flex flex-col welcome-info">
+            <span class="text-sm font-light welcome-text">{{bien}}</span>
+            <span class="text-xl font-bold leading-tight user-name">{{ usuarioActual }}</span>
+
+            <div class="flex gap-4 mt-2 action-icons">
+                <a href="#" class="hover:text-blue-300 transition-colors action-icon" title="Inicio">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="#" class="hover:text-blue-300 transition-colors action-icon" title="Perfil">
+                    <i class="fas fa-user"></i>
+                </a>
+                <a href="#" class="hover:text-blue-300 transition-colors action-icon" title="Salir">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
             </div>
         </div>
     </div>
@@ -304,7 +312,6 @@
             <div *ngIf="reportesExpandido" class="bg-[#111B5F] space-y-0" @slideDown>
 
                 <button (click)="navegarA('/reportes/estadisticas')"
-
                     class="w-full flex items-center space-x-3 px-3 py-2.5 hover:bg-[#1e2875] transition text-left group relative">
 
                     <div class="absolute left-[21px] top-1/2 w-0.5 h-1/2" [ngClass]="{

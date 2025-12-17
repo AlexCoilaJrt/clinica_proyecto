@@ -12,9 +12,10 @@ export const routes: Routes = [
         path: 'configuraciones',
         loadChildren: () => USUARIOS_ROUTES
     },
+
     {
         path: 'reportes',
         loadChildren: () => REPORTES_ROUTES,
         canActivate: [AuthGuard]
     },
-];
+]    
