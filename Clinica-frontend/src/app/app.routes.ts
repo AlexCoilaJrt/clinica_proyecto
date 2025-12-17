@@ -3,6 +3,7 @@ import { LoginComponent } from './features/auth/pages/login/login.component';
 import { CambioSucursalComponent } from './features/auth/pages/cambio-sucursal/cambio-sucursal.component';
 import { AuthGuard } from './core/guards/auth.guard';
 import { USUARIOS_ROUTES } from './features/usuarios/users.routes';
+import { REPORTES_ROUTES } from './features/reportes/reportes.routes';
 
 export const routes: Routes = [
     { path: '', component: LoginComponent },
@@ -10,5 +11,10 @@ export const routes: Routes = [
     {
         path: 'configuraciones',
         loadChildren: () => USUARIOS_ROUTES
+    },
+    {
+        path: 'reportes',
+        loadChildren: () => REPORTES_ROUTES,
+        canActivate: [AuthGuard]
     },
 ];
