@@ -60,6 +60,7 @@ export class BitacoraComponent implements OnInit {
             'LOGIN_SUCCESS': 'bg-cyan-100 text-cyan-800',
             'LOGIN_FAILED': 'bg-red-100 text-red-800',
             'LOGIN_BLOCKED_IP': 'bg-purple-100 text-purple-800',
+            'LOGOUT': 'bg-slate-100 text-slate-800',
 
             // Acciones de Usuario
             'USER_CREATE': 'bg-green-100 text-green-800',

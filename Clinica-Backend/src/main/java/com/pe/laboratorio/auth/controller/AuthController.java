@@ -71,11 +71,15 @@ public class AuthController {
          */
         @PostMapping("/logout")
         public ResponseEntity<ApiResponse<Void>> logout(
-                        @RequestHeader("Authorization") String token) {
+                        @RequestHeader("Authorization") String token,
+                        HttpServletRequest httpRequest) {
+                System.out.println("DEBUG: AuthController.logout called"); // DEBUG LOG
 
                 // Extraer el token sin el prefijo "Bearer "
                 String jwtToken = token.substring(7);
-                authService.logout(jwtToken);
+                System.out.println("DEBUG: Token extracted: " + jwtToken.substring(0, 10) + "..."); // DEBUG LOG
+
+                authService.logout(jwtToken, httpRequest);
 
                 return ResponseEntity.ok(ApiResponse.<Void>builder()
                                 .success(true)

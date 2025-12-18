@@ -33,7 +33,7 @@ export class SidebarComponent implements OnInit {
   rutaActual: string = '';
   usuarioActual: string = 'Usuario';
   userGender: string = 'null';
-    bien: string = 'null';
+  bien: string = 'null';
   constructor(private router: Router) {
     // Escuchar cambios de ruta
     this.router.events.pipe(
@@ -63,24 +63,24 @@ export class SidebarComponent implements OnInit {
     }
   }
   getProfileImage(): string {
-  if (this.userGender === 'M') {
-    this.bien = 'Bienvenido';
-    return '/male-avatar.jpg';
-  } else if (this.userGender === 'F') {
-    this.bien = 'Bienvenida';
-    return '/female-avatar.png';
-  } else {
-    this.bien = 'Bienvenide';
-    return '/default-avatar.png';
+    if (this.userGender === 'M') {
+      this.bien = 'Bienvenido';
+      return '/male-avatar.jpg';
+    } else if (this.userGender === 'F') {
+      this.bien = 'Bienvenida';
+      return '/female-avatar.png';
+    } else {
+      this.bien = 'Bienvenide';
+      return '/default-avatar.png';
+    }
   }
-}
   // Expandir automáticamente el menú según la ruta actual
   expandirMenuSegunRuta(url: string) {
     if (url.includes('/configuraciones')) {
       this.configuracionesExpandido = true;
     } else if (url.includes('/procesos')) {
       this.procesosExpandido = true;
-    } else if (url.includes('/reportes')) {
+    } else if (url.includes('/reportes') || url.includes('/auditoria')) {
       this.reportesExpandido = true;
     }
   }

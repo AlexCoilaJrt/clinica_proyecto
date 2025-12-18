@@ -64,17 +64,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   getProfileImage(): string {
-  if (this.userGender === 'M') {
-    this.bien = 'Bienvenido';
-    return '/male-avatar.jpg';
-  } else if (this.userGender === 'F') {
-    this.bien = 'Bienvenida';
-    return '/female-avatar.png';
-  } else {
-    this.bien = 'Bienvenide';
-    return '/default-avatar.png';
+    if (this.userGender === 'M') {
+      this.bien = 'Bienvenido';
+      return '/male-avatar.jpg';
+    } else if (this.userGender === 'F') {
+      this.bien = 'Bienvenida';
+      return '/female-avatar.png';
+    } else {
+      this.bien = 'Bienvenide';
+      return '/default-avatar.png';
+    }
   }
-}
   iniciarTemporizador(): void {
     // Obtener tiempo inicial del servidor inmediatamente
     this.sincronizarConServidor();
@@ -193,8 +193,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   cerrarSesion() {
     this.menuUsuarioAbierto = false;
-    localStorage.clear();
+    this.authService.logout();
     this.onCerrarSesion.emit();
-    this.router.navigate(['/']);
   }
 }

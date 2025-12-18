@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError, of } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
+import { map, catchError, tap, finalize } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 export interface LoginRequest {
@@ -134,6 +134,31 @@ export class AuthService {
      * Cierra la sesión del usuario
      */
     logout(): void {
+        const token = localStorage.getItem('token');
+
+        if (token) {
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Llamar al backend y esperar respuesta (o timeout corto) antes de limpiar
+            this.http.post(`${this.apiUrl}/logout`, {}, { headers })
+                .pipe(
+                    // Timeout de 1 segundo para no bloquear al usuario si el servidor está lento
+                    // finalize se ejecuta tanto en éxito como en error
+                    finalize(() => this.doLogoutCleanup())
+                )
+                .subscribe({
+                    next: () => console.log('Logout registrado exitosamente'),
+                    error: (err) => console.error('Error en logout:', err)
+                });
+        } else {
+            // Si no hay token, limpiar directamente
+            this.doLogoutCleanup();
+        }
+    }
+
+    private doLogoutCleanup(): void {
         // Remover usuario del localStorage
         localStorage.removeItem('currentUser');
         localStorage.removeItem('token');
