@@ -1,0 +1,46 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------------------< org.example:laboratorio >-----------------------
+[INFO] Building laboratorio 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.4.1:clean (default-clean) @ laboratorio ---
+[INFO] Deleting /Users/omarcondori/Documents/PROYECTOS/clinica_proyecto/Clinica-Backend/target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ laboratorio ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 3 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ laboratorio ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 92 source files with javac [debug parameters release 21] to target/classes
+[WARNING] /Users/omarcondori/Documents/PROYECTOS/clinica_proyecto/Clinica-Backend/src/main/java/com/pe/laboratorio/roles/entity/Role.java:[34,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /Users/omarcondori/Documents/PROYECTOS/clinica_proyecto/Clinica-Backend/src/main/java/com/pe/laboratorio/roles/entity/Role.java:[38,29] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /Users/omarcondori/Documents/PROYECTOS/clinica_proyecto/Clinica-Backend/src/main/java/com/pe/laboratorio/roles/dto/request/RoleRequest.java:[27,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /Users/omarcondori/Documents/PROYECTOS/clinica_proyecto/Clinica-Backend/src/main/java/com/pe/laboratorio/permissions/entity/Permission.java:[33,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[INFO] /Users/omarcondori/Documents/PROYECTOS/clinica_proyecto/Clinica-Backend/src/main/java/com/pe/laboratorio/config/SecurityConfig.java: /Users/omarcondori/Documents/PROYECTOS/clinica_proyecto/Clinica-Backend/src/main/java/com/pe/laboratorio/config/SecurityConfig.java uses or overrides a deprecated API.
+[INFO] /Users/omarcondori/Documents/PROYECTOS/clinica_proyecto/Clinica-Backend/src/main/java/com/pe/laboratorio/config/SecurityConfig.java: Recompile with -Xlint:deprecation for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ laboratorio ---
+[INFO] skip non existing resourceDirectory /Users/omarcondori/Documents/PROYECTOS/clinica_proyecto/Clinica-Backend/src/test/resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ laboratorio ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target/test-classes
+[INFO] 
+[INFO] --- surefire:3.5.4:test (default-test) @ laboratorio ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.4.2:jar (default-jar) @ laboratorio ---
+[INFO] Building jar: /Users/omarcondori/Documents/PROYECTOS/clinica_proyecto/Clinica-Backend/target/laboratorio-0.0.1-SNAPSHOT.jar
+[INFO] 
+[INFO] --- spring-boot:3.5.8:repackage (repackage) @ laboratorio ---
+[INFO] Replacing main artifact /Users/omarcondori/Documents/PROYECTOS/clinica_proyecto/Clinica-Backend/target/laboratorio-0.0.1-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to /Users/omarcondori/Documents/PROYECTOS/clinica_proyecto/Clinica-Backend/target/laboratorio-0.0.1-SNAPSHOT.jar.original
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.114 s
+[INFO] Finished at: 2025-12-17T16:59:24-05:00
+[INFO] ------------------------------------------------------------------------

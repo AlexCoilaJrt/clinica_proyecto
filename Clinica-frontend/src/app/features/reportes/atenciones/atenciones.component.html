@@ -1,0 +1,300 @@
+<app-header [breadcrumb]="'Reportes / Rep. atenciones'" (onCerrarSesion)="cerrarSesion()"></app-header>
+
+<div class="min-h-screen bg-gray-50 flex">
+    <app-sidebar></app-sidebar>
+
+    <!-- Contenido Principal -->
+    <main class="flex-1 p-6 min-w-0">
+
+        <!-- Notificaciones Toast -->
+        <div class="fixed top-4 right-4 z-50 space-y-2">
+            <div *ngFor="let notif of notificaciones"
+                class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-fade-in">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>{{ notif }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros de Búsqueda -->
+        <div class="bg-white rounded-lg shadow-md mb-6 overflow-hidden">
+            <!-- Header con fondo Azul -->
+            <div class="bg-[#2563EB] px-6 py-3 flex justify-between items-center text-white">
+                <h2 class="text-lg font-semibold">Filtros de Búsqueda</h2>
+
+                <!-- Botones de Exportación -->
+                <div class="flex space-x-2">
+                    <button (click)="exportarPDF()"
+                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md transition flex items-center space-x-2 text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                        <span>PDF</span>
+                    </button>
+                    <button (click)="exportarExcel()"
+                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md transition flex items-center space-x-2 text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>Excel</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Body blanco con inputs alineados -->
+            <div class="p-6">
+                <div class="flex flex-wrap items-end gap-4">
+                    <!-- Fecha desde -->
+                    <div class="w-full sm:w-48">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha desde:</label>
+                        <input type="date" [(ngModel)]="fechaInicio" (change)="aplicarFiltros()"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                            placeholder="dd/mm/aaaa">
+                    </div>
+
+                    <!-- Fecha hasta -->
+                    <div class="w-full sm:w-48">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Fecha hasta:</label>
+                        <input type="date" [(ngModel)]="fechaFin" (change)="aplicarFiltros()"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                            placeholder="dd/mm/aaaa">
+                    </div>
+
+                    <!-- DNI / Paciente -->
+                    <div class="w-full sm:w-64">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">DNI / Paciente:</label>
+                        <input type="text" [(ngModel)]="dniPaciente" (input)="aplicarFiltros()"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                            placeholder="DNI o nombre">
+                    </div>
+
+                    <!-- Estado Solicitud -->
+                    <div class="w-full sm:w-56">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Estado Solicitud:</label>
+                        <select [(ngModel)]="estadoSelected" (change)="aplicarFiltros()"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+                            <option value="">Todos</option>
+                            <option value="PENDIENTE">Pendiente</option>
+                            <option value="EN_PROCESO">En Proceso</option>
+                            <option value="PROCESADO">Procesado</option>
+                            <option value="VALIDADO">Validado</option>
+                            <option value="ENTREGADO">Entregado</option>
+                        </select>
+                    </div>
+
+                    <!-- Botón Buscar -->
+                    <div class="flex-none">
+                        <button (click)="buscar()" [disabled]="cargando"
+                            class="h-[42px] bg-[#6366F1] hover:bg-[#5558E3] text-white font-medium px-6 rounded-md transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+                            {{ cargando ? 'Buscando...' : 'Buscar' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indicador de Carga -->
+        <div *ngIf="cargando" class="flex justify-center items-center py-12">
+            <div class="loading-spinner"></div>
+        </div>
+
+        <!-- Mensaje de Error -->
+        <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {{ error }}
+        </div>
+
+        <!-- Información de resultados -->
+        <div *ngIf="!cargando && ordenesFiltradas.length > 0" class="mb-4 text-sm text-gray-600">
+            Mostrando {{ (paginaActual - 1) * itemsPorPagina + 1 }} -
+            {{ Math.min(paginaActual * itemsPorPagina, ordenesFiltradas.length) }}
+            de {{ ordenesFiltradas.length }} resultados
+        </div>
+
+        <!-- Tabla de Resultados -->
+        <div *ngIf="!cargando && ordenesFiltradas.length > 0" class="table-container">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-[#E8F4FD] sticky-header">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Fecha
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                            Documento</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                            Paciente</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Edad
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Login
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                            Médico Sol</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Total
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Punto
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                            Atención</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Nro
+                            orden</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Fecha
+                            reg.</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Est.
+                            Atención</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Est.
+                            Examen</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                            Opciones</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr *ngFor="let orden of ordenesPaginadas" class="hover:bg-gray-50">
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                            {{ formatearFecha(orden.fechaOrden) }}
+                        </td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                            {{ orden.patientDni }}
+                        </td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                            {{ orden.patientFirstName }} {{ orden.patientLastName }}
+                        </td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                            -
+                        </td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                            {{ orden.userName || '-' }}
+                        </td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                            {{ orden.medicoNombre || '-' }}
+                        </td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                            {{ orden.total | number: '1.2-2' }}
+                        </td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                            -
+                        </td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                            {{ orden.tipoAtencion || 'AMBULATORIO' }}
+                        </td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900 font-mono">
+                            {{ orden.numeroOrden }}
+                        </td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                            {{ formatearFecha(orden.createdAt) }}
+                        </td>
+                        <!-- Estado Atención -->
+                        <td class="px-4 py-3 whitespace-nowrap">
+                            <span [ngClass]="getEstadoClass(orden.estado)" class="badge">
+                                {{ orden.estado }}
+                            </span>
+                        </td>
+                        <!-- Estado Examen (promedio de detalles) -->
+                        <td class="px-4 py-3 whitespace-nowrap">
+                            <span class="badge bg-red-100 text-red-800">
+                                Pendiente
+                            </span>
+                        </td>
+                        <!-- Opciones -->
+                        <td class="px-4 py-3 whitespace-nowrap text-sm">
+                            <div class="flex space-x-2">
+                                <button (click)="verDetalles(orden.id)"
+                                    class="bg-[#00BCD4] hover:bg-[#00ACC1] text-white p-2 rounded transition"
+                                    title="Ver detalles">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </button>
+                                <button (click)="procesarOrden(orden.id)"
+                                    class="bg-[#4CAF50] hover:bg-[#45A049] text-white p-2 rounded transition"
+                                    title="Procesar orden">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        <div *ngIf="!cargando && ordenesFiltradas.length > 0 && totalPaginas > 1"
+            class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 rounded-b-lg">
+            <div class="flex-1 flex justify-between sm:hidden">
+                <button (click)="irAPagina(paginaActual - 1)" [disabled]="paginaActual === 1"
+                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
+                    Anterior
+                </button>
+                <button (click)="irAPagina(paginaActual + 1)" [disabled]="paginaActual === totalPaginas"
+                    class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
+                    Siguiente
+                </button>
+            </div>
+            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Página <span class="font-medium">{{ paginaActual }}</span> de
+                        <span class="font-medium">{{ totalPaginas }}</span>
+                    </p>
+                </div>
+                <div>
+                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        <button (click)="irAPagina(paginaActual - 1)" [disabled]="paginaActual === 1"
+                            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50">
+                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+
+                        <button *ngFor="let p of paginasArray" (click)="irAPagina(p)"
+                            [class.bg-blue-50]="p === paginaActual" [class.border-blue-500]="p === paginaActual"
+                            [class.text-blue-600]="p === paginaActual"
+                            class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                            {{ p }}
+                        </button>
+
+                        <button (click)="irAPagina(paginaActual + 1)" [disabled]="paginaActual === totalPaginas"
+                            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50">
+                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sin Resultados -->
+        <div *ngIf="!cargando && ordenesFiltradas.length === 0" class="bg-white rounded-lg shadow-md p-8 text-center">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No se encontraron órdenes</h3>
+            <p class="mt-1 text-sm text-gray-500">Intenta ajustar los filtros de búsqueda.</p>
+        </div>
+
+    </main>
+
+    <!-- Modal de Detalles -->
+    <app-detalles-examen-modal [orden]="ordenSeleccionada" [mostrar]="mostrarModalDetalles"
+        (cerrar)="cerrarModalDetalles()">
+    </app-detalles-examen-modal>
+
+    <!-- Modal de Procesar Orden -->
+    <app-procesar-orden-modal [orden]="ordenSeleccionada" [mostrar]="mostrarModalProcesar"
+        (cerrar)="cerrarModalProcesar()" (abrirResultados)="verResultados()" (abrirExamenes)="verExamenes()">
+    </app-procesar-orden-modal>
+</div>
