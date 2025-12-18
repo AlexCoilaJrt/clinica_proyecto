@@ -134,95 +134,105 @@
                 </div>
 
                 <!-- Tabla -->
-                <div class="override-hidden rounded-xl border border-gray-200 shadow-sm">
+                <div class="rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-800 text-white">
-                                <tr>
+                        <table class="min-w-full divide-y divide-gray-100">
+                            <thead>
+                                <tr class="bg-blue-50/50 border-b border-blue-100">
                                     <th scope="col"
-                                        class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">#</th>
+                                        class="px-6 py-5 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">
+                                        #</th>
                                     <th scope="col"
-                                        class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Usuario
-                                    </th>
+                                        class="px-6 py-5 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">
+                                        Usuario</th>
                                     <th scope="col"
-                                        class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Módulo
-                                    </th>
+                                        class="px-6 py-5 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">
+                                        Módulo</th>
                                     <th scope="col"
-                                        class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Acción
-                                    </th>
+                                        class="px-6 py-5 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">
+                                        Acción</th>
                                     <th scope="col"
-                                        class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                                        class="px-6 py-5 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">
                                         Descripción</th>
                                     <th scope="col"
-                                        class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Fecha /
-                                        Hora</th>
+                                        class="px-6 py-5 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">
+                                        Fecha / Hora</th>
                                     <th scope="col"
-                                        class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">IP</th>
+                                        class="px-6 py-5 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">
+                                        IP</th>
                                     <th scope="col"
-                                        class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Estado
-                                    </th>
+                                        class="px-6 py-5 text-left text-xs font-bold text-blue-800 uppercase tracking-wider">
+                                        Estado</th>
                                     <th scope="col"
-                                        class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">Opción
-                                    </th>
+                                        class="px-6 py-5 text-center text-xs font-bold text-blue-800 uppercase tracking-wider">
+                                        Opción</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                            <tbody class="bg-white divide-y divide-gray-100">
                                 <tr *ngFor="let log of paginatedLogs; let i = index"
-                                    class="hover:bg-blue-50/50 transition-colors duration-150">
-                                    <td class="px-6 py-4 text-sm text-gray-500 font-mono">{{ (currentPage - 1) *
+                                    class="hover:bg-blue-50/30 transition-all duration-200">
+                                    <td class="px-6 py-5 text-sm text-gray-400 font-mono">{{ (currentPage - 1) *
                                         itemsPerPage + i + 1 }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-6 py-5 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div
-                                                class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs mr-3">
+                                                class="h-9 w-9 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-blue-600 font-bold text-xs mr-3 shadow-sm border border-blue-50">
                                                 {{ log.username.charAt(0).toUpperCase() }}
                                             </div>
-                                            <div class="text-sm font-semibold text-gray-900">{{ log.username }}</div>
+                                            <div class="text-sm font-bold text-gray-700">{{ log.username }}</div>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">{{
+                                    <td class="px-6 py-5 whitespace-nowrap text-sm text-gray-600 font-medium">{{
                                         log.module || '-' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-6 py-5 whitespace-nowrap">
                                         <span
-                                            class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border"
-                                            [ngClass]="getActionClass(log.action) + ' border-opacity-20'">
+                                            class="px-3 py-1.5 inline-flex text-xs leading-5 font-bold rounded-lg border shadow-sm"
+                                            [ngClass]="getActionClass(log.action) + ' border-opacity-30 border-transparent'">
                                             {{ getActionLabel(log.action) }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-gray-600 max-w-xs truncate"
+                                    <td class="px-6 py-5 text-sm text-gray-500 max-w-xs truncate"
                                         title="{{ log.details }}">
                                         {{ log.details }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                    <td class="px-6 py-5 whitespace-nowrap text-sm text-gray-600">
                                         <div class="flex flex-col">
-                                            <span class="font-medium">{{ log.timestamp | date:'dd/MM/yyyy' }}</span>
-                                            <span class="text-xs text-gray-500">{{ log.timestamp | date:'HH:mm:ss'
+                                            <span class="font-bold text-gray-700">{{ log.timestamp | date:'dd/MM/yyyy'
                                                 }}</span>
+                                            <span class="text-xs text-gray-400 mt-0.5">{{ log.timestamp |
+                                                date:'HH:mm:ss' }}</span>
                                         </div>
                                     </td>
-                                    <td
-                                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono bg-gray-50 mx-2 rounded-md">
-                                        {{ log.ipAddress }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full"
+                                    <td class="px-6 py-5 whitespace-nowrap text-sm text-gray-500 font-mono">
+                                        <span class="bg-gray-50 px-2 py-1 rounded text-xs border border-gray-100">{{
+                                            log.ipAddress }}</span>
+                                    </td>
+                                    <td class="px-6 py-5 whitespace-nowrap">
+                                        <span
+                                            class="px-3 py-1.5 inline-flex text-xs leading-5 font-bold rounded-full items-center gap-1.5"
                                             [ngClass]="getStatusClass(log.status)">
+                                            <span class="w-1.5 h-1.5 rounded-full"
+                                                [ngClass]="log.status === 'Éxito' ? 'bg-blue-500' : 'bg-red-500'"></span>
                                             {{ log.status || 'N/A' }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                    <td class="px-6 py-5 whitespace-nowrap text-center text-sm font-medium">
                                         <button (click)="viewDetails(log)"
-                                            class="text-blue-600 hover:text-blue-800 transition-colors focus:outline-none transform hover:scale-110"
+                                            class="text-blue-500 hover:text-blue-700 transition-all duration-200 focus:outline-none transform hover:scale-110 active:scale-95"
                                             title="Ver Detalles">
                                             <i class="fas fa-eye text-lg"></i>
                                         </button>
                                     </td>
                                 </tr>
                                 <tr *ngIf="paginatedLogs.length === 0">
-                                    <td colspan="9" class="px-6 py-10 text-center text-gray-500">
+                                    <td colspan="9" class="px-6 py-20 text-center text-gray-500">
                                         <div class="flex flex-col items-center justify-center">
-                                            <i class="fas fa-search text-4xl text-gray-300 mb-3"></i>
-                                            <p class="text-lg font-medium">No se encontraron registros</p>
-                                            <p class="text-sm">Intente con otros filtros de búsqueda</p>
+                                            <div class="bg-gray-50 p-4 rounded-full mb-4">
+                                                <i class="fas fa-search text-3xl text-gray-300"></i>
+                                            </div>
+                                            <p class="text-lg font-medium text-gray-600">No se encontraron registros</p>
+                                            <p class="text-sm text-gray-400 mt-1">Intente con otros filtros de búsqueda
+                                            </p>
                                         </div>
                                     </td>
                                 </tr>
