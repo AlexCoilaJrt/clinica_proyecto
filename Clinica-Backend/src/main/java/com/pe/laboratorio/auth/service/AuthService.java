@@ -250,12 +250,8 @@ public class AuthService {
      * Logout (opcional: implementar blacklist de tokens)
      */
     public void logout(String token, HttpServletRequest httpRequest) {
-        System.out.println("DEBUG: AuthService.logout started");
         try {
-            System.out.println("DEBUG: Extracting username...");
             String username = jwtService.extractUsername(token);
-            System.out.println("DEBUG: Username extracted: " + username);
-
             Long userId = jwtService.extractUserId(token);
             String ipAddress = HttpUtils.getClientIpAddress(httpRequest);
             String userAgent = HttpUtils.getUserAgent(httpRequest);
@@ -266,7 +262,6 @@ public class AuthService {
 
             // Auditoría
             try {
-                System.out.println("DEBUG: Attempting to log audit action for LOGOUT");
                 auditService.logAction(
                         "LOGOUT",
                         "LOGOUT",
@@ -278,16 +273,11 @@ public class AuthService {
                         userAgent,
                         "/api/auth/logout",
                         "POST");
-                System.out.println("DEBUG: Audit log executed");
             } catch (Exception e) {
-                System.out.println("DEBUG: Error logging audit: " + e.getMessage());
-                e.printStackTrace();
                 log.error("Error logging audit for logout", e);
             }
 
         } catch (Exception e) {
-            System.out.println("DEBUG: Error in logout process: " + e.getMessage());
-            e.printStackTrace();
             log.error("Error processing logout request", e);
         }
     }

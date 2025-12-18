@@ -9,4 +9,5 @@ export const USUARIOS_ROUTES: Routes = [
     { path: 'usuarios', component: GestionComponent },
     { path: 'areas', component: LabAreasComponent },
     { path: 'roles', component: RolComponent },
+    { path: 'cambio-clave', loadComponent: () => import('./cambio-clave/cambio-clave.component').then(m => m.CambioClaveComponent) },
 ];
