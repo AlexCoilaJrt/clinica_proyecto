@@ -20,6 +20,17 @@ export class CambioClaveComponent implements OnInit {
     username = '';
     userId: number | null = null;
 
+    // Visibility toggles
+    showOldPassword = false;
+    showNewPassword = false;
+    showConfirmPassword = false;
+
+    togglePasswordVisibility(field: 'old' | 'new' | 'confirm') {
+        if (field === 'old') this.showOldPassword = !this.showOldPassword;
+        else if (field === 'new') this.showNewPassword = !this.showNewPassword;
+        else if (field === 'confirm') this.showConfirmPassword = !this.showConfirmPassword;
+    }
+
     constructor(
         private fb: FormBuilder,
         private userService: UserService,

@@ -63,9 +63,9 @@
                         <label for="old" class="block text-sm font-semibold text-gray-700 mb-2">Contraseña
                             actual</label>
                         <div class="relative">
-                            <input type="password" id="old" formControlName="oldPassword"
+                            <input [type]="showOldPassword ? 'text' : 'password'" id="old" formControlName="oldPassword"
                                 placeholder="Ingrese su contraseña actual"
-                                class="w-full pl-11 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium"
+                                class="w-full pl-11 pr-12 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium"
                                 [ngClass]="{'border-red-500 focus:border-red-500 focus:ring-red-200': changePasswordForm.get('oldPassword')?.touched && changePasswordForm.get('oldPassword')?.invalid}">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
@@ -74,6 +74,10 @@
                                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                 </svg>
                             </div>
+                            <button type="button" (click)="togglePasswordVisibility('old')"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+                                <i class="fas" [ngClass]="showOldPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -81,9 +85,9 @@
                     <div class="group">
                         <label for="new" class="block text-sm font-semibold text-gray-700 mb-2">Nueva contraseña</label>
                         <div class="relative">
-                            <input type="password" id="new" formControlName="newPassword"
+                            <input [type]="showNewPassword ? 'text' : 'password'" id="new" formControlName="newPassword"
                                 placeholder="Ingrese su nueva contraseña"
-                                class="w-full pl-11 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium"
+                                class="w-full pl-11 pr-12 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium"
                                 [ngClass]="{'border-red-500 focus:border-red-500 focus:ring-red-200': changePasswordForm.get('newPassword')?.touched && changePasswordForm.get('newPassword')?.invalid}">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
@@ -92,6 +96,10 @@
                                         d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                                 </svg>
                             </div>
+                            <button type="button" (click)="togglePasswordVisibility('new')"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+                                <i class="fas" [ngClass]="showNewPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -100,9 +108,9 @@
                         <label for="confirm" class="block text-sm font-semibold text-gray-700 mb-2">Repetir
                             contraseña</label>
                         <div class="relative">
-                            <input type="password" id="confirm" formControlName="confirmPassword"
-                                placeholder="Confirme su nueva contraseña"
-                                class="w-full pl-11 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium"
+                            <input [type]="showConfirmPassword ? 'text' : 'password'" id="confirm"
+                                formControlName="confirmPassword" placeholder="Confirme su nueva contraseña"
+                                class="w-full pl-11 pr-12 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium"
                                 [ngClass]="{'border-red-500 focus:border-red-500 focus:ring-red-200': changePasswordForm.get('confirmPassword')?.touched && changePasswordForm.get('confirmPassword')?.invalid}">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor"
@@ -111,6 +119,10 @@
                                         d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
+                            <button type="button" (click)="togglePasswordVisibility('confirm')"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+                                <i class="fas" [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            </button>
                         </div>
                         <p *ngIf="changePasswordForm.hasError('mismatch') && changePasswordForm.get('confirmPassword')?.touched"
                             class="mt-1 text-sm text-red-600 flex items-center">
