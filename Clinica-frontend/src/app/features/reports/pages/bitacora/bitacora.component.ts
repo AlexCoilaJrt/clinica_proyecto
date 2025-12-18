@@ -25,6 +25,13 @@ export class BitacoraComponent implements OnInit {
         endDate: ''
     };
 
+    // UI Controls
+    showFilters = false;
+
+    toggleFilters() {
+        this.showFilters = !this.showFilters;
+    }
+
     // Paginación
     currentPage = 1;
     itemsPerPage = 10;

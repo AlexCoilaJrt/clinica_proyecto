@@ -1,254 +1,365 @@
 <app-header></app-header>
-<div class="min-h-screen bg-gray-50 flex">
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex">
     <app-sidebar></app-sidebar>
-    <div class="flex-1 p-6">
-        <!-- Breadcrumb -->
-        <div class="flex justify-end mb-4">
-            <div class="flex items-center text-sm text-gray-600">
-                <img src="https://img.icons8.com/sf-regular-filled/48/dashboard.png" alt="dashboard"
-                    class="w-5 h-5 mr-2 opacity-70" />
-                <a routerLink="/reportes" class="text-blue-600 hover:underline cursor-pointer">Reportes</a>
-                <span class="mx-2 text-gray-400">/</span>
-                <span class="font-semibold text-gray-800">Bitácora</span>
-            </div>
+    <div class="flex-1 p-8">
+        <!-- Breadcrumb mejorado -->
+        <div class="flex items-center text-sm text-gray-600 mb-6">
+            <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <a routerLink="/reportes" class="text-blue-600 font-medium hover:underline cursor-pointer">Reportes</a>
+            <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+            <span class="text-gray-800 font-medium">Bitácora</span>
         </div>
 
-        <div class="p-6 bg-white rounded-lg shadow-sm">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold flex items-center">
-                    <i class="fas fa-list-alt mr-2 text-gray-600"></i> Bitácora del Sistema
-                </h2>
-                <span class="px-3 py-1 bg-gray-600 text-white text-xs rounded-full">Auditoría</span>
-            </div>
-
-            <!-- Filtros -->
-            <div class="bg-white p-6 rounded-xl shadow-sm mb-6 border border-gray-100">
-                <div class="flex items-center mb-4 text-gray-800">
-                    <h3 class="font-bold text-lg">Panel de Búsqueda</h3>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <!-- Usuario -->
-                    <div class="relative">
-                        <label
-                            class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Usuario</label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
-                                <i class="fas fa-user text-xs"></i>
-                            </span>
-                            <input type="text" [(ngModel)]="filters.username" placeholder="Ej: ibanez"
-                                class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm outline-none">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 w-full">
+            <!-- Header con gradiente -->
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-8 py-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
+                            <i class="fas fa-list-alt text-2xl text-white"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-3xl font-bold text-white">Bitácora del Sistema</h2>
+                            <p class="text-blue-100 text-sm mt-1">Historial completo de acciones y auditoría</p>
                         </div>
                     </div>
-
-                    <!-- Acción -->
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Acción
-                            Realizada</label>
-                        <select [(ngModel)]="filters.action"
-                            class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm outline-none appearance-none cursor-pointer">
-                            <option value="Todas">Todas las acciones</option>
-                            <option value="LOGIN_SUCCESS">✅ Login Exitoso</option>
-                            <option value="LOGIN_FAILED">❌ Login Fallido</option>
-                            <option value="LOGOUT">🚪 Cerrar Sesión</option>
-                            <optgroup label="Gestión de Datos">
-                                <option value="INSERT">➕ Insertar Datos</option>
-                                <option value="UPDATE">📝 Actualizar Registro</option>
-                                <option value="DELETE">🗑️ Eliminar Registro</option>
-                            </optgroup>
-                            <optgroup label="Gestión de Usuarios">
-                                <option value="USER_CREATE">👤 Crear Usuario</option>
-                                <option value="USER_UPDATE">✏️ Actualizar Usuario</option>
-                                <option value="USER_DELETE">🚫 Eliminar Usuario</option>
-                                <option value="USER_STATUS_CHANGE">🔄 Cambiar Estado Usuario</option>
-                                <option value="USER_ROLE_ASSIGN">🎭 Asignar Roles</option>
-                                <option value="USER_ROLE_REMOVE">❌ Remover Roles</option>
-                                <option value="USER_PASSWORD_CHANGE">🔑 Cambiar Contraseña</option>
-                            </optgroup>
-                        </select>
-                    </div>
-
-                    <!-- Fecha Desde -->
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Fecha
-                            Desde</label>
-                        <input type="date" [(ngModel)]="filters.startDate"
-                            class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm outline-none">
-                    </div>
-
-                    <!-- Fecha Hasta -->
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Fecha
-                            Hasta</label>
-                        <input type="date" [(ngModel)]="filters.endDate"
-                            class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-sm outline-none">
-                    </div>
-                </div>
-
-                <div class="flex justify-end mt-6 pt-4 border-t border-gray-100 space-x-3">
-                    <button (click)="clean()"
-                        class="px-5 py-2.5 text-gray-600 font-medium rounded-lg text-sm hover:bg-gray-100 transition-colors flex items-center">
-                        <i class="fas fa-undo-alt mr-2"></i> Restablecer
-                    </button>
-                    <button (click)="search()"
-                        class="px-6 py-2.5 bg-[#273686] text-white font-bold rounded-lg text-sm hover:bg-[#1e2a6a] shadow-md shadow-[#273686]/30 transition-all flex items-center">
-                        <i class="fas fa-filter mr-2"></i> Aplicar Filtros
-                    </button>
-                </div>
-            </div>
-
-            <!-- Tabla -->
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 border">
-                    <thead class="bg-gray-800 text-white">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">#</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Usuario</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Módulo</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Acción</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Descripción
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Fecha / Hora
-                            </th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">IP</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Estado</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Opción</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <tr *ngFor="let log of paginatedLogs; let i = index" class="hover:bg-gray-50">
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ (currentPage - 1) * itemsPerPage + i + 1 }}
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-900 font-medium">{{ log.username }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ log.module || '-' }}</td>
-                            <td class="px-4 py-3 text-sm">
-                                <span class="px-2 py-1 rounded text-xs font-semibold"
-                                    [ngClass]="getActionClass(log.action)">
-                                    {{ getActionLabel(log.action) }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-700 max-w-xs truncate">{{ log.details }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ log.timestamp | date:'dd/MM/yyyy HH:mm' }}
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-700 font-mono">{{ log.ipAddress }}</td>
-                            <td class="px-4 py-3 text-sm">
-                                <span class="px-2 py-1 rounded text-xs font-semibold"
-                                    [ngClass]="getStatusClass(log.status)">
-                                    {{ log.status || 'N/A' }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                <button (click)="viewDetails(log)"
-                                    class="text-blue-600 hover:text-blue-800 transition-colors">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Paginación -->
-            <div class="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
-                <div class="flex items-center space-x-2">
-                    <label class="text-sm text-gray-600">Registros por página:</label>
-                    <select [(ngModel)]="itemsPerPage" (change)="updatePagination()"
-                        class="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                        <option [value]="5">5</option>
-                        <option [value]="10">10</option>
-                    </select>
-                </div>
-
-                <div class="flex items-center space-x-2">
-                    <button (click)="goToPage(1)" [disabled]="currentPage === 1"
-                        class="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i class="fas fa-angle-double-left"></i>
-                    </button>
-                    <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"
-                        class="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i class="fas fa-angle-left"></i>
-                    </button>
-                    <span class="text-sm text-gray-600">
-                        Página {{ currentPage }} de {{ totalPages }}
+                    <span
+                        class="px-4 py-1.5 bg-white/10 text-white text-xs font-semibold rounded-full border border-white/20 backdrop-blur-md">
+                        Auditoría Activa
                     </span>
-                    <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"
-                        class="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i class="fas fa-angle-right"></i>
-                    </button>
-                    <button (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages"
-                        class="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i class="fas fa-angle-double-right"></i>
-                    </button>
                 </div>
             </div>
 
+            <!-- Body -->
+            <div class="p-8">
+
+                <!-- Filtros -->
+                <div class="bg-gray-50 rounded-2xl shadow-sm mb-8 border border-gray-200 overflow-hidden">
+                    <div class="flex items-center justify-between p-6 cursor-pointer hover:bg-gray-100 transition-colors"
+                        (click)="toggleFilters()">
+                        <div class="flex items-center text-gray-800">
+                            <i class="fas fa-search text-blue-600 mr-2"></i>
+                            <h3 class="font-bold text-lg">Panel de Búsqueda</h3>
+                            <span class="ml-3 text-xs text-gray-500 font-normal" *ngIf="!showFilters">
+                                (Click para desplegar filtros)
+                            </span>
+                        </div>
+                        <i class="fas fa-chevron-down text-gray-500 transition-transform duration-300"
+                            [ngClass]="{'transform rotate-180': showFilters}"></i>
+                    </div>
+
+                    <div *ngIf="showFilters" class="px-6 pb-6 border-t border-gray-100">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
+                            <!-- Usuario -->
+                            <div class="relative">
+                                <label
+                                    class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Usuario</label>
+                                <div class="relative group">
+                                    <span
+                                        class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                                        <i class="fas fa-user text-sm"></i>
+                                    </span>
+                                    <input type="text" [(ngModel)]="filters.username" placeholder="Ej: admin"
+                                        class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm outline-none shadow-sm">
+                                </div>
+                            </div>
+
+                            <!-- Acción -->
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Acción
+                                    Realizada</label>
+                                <div class="relative">
+                                    <select [(ngModel)]="filters.action"
+                                        class="w-full pl-4 pr-8 py-2.5 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm outline-none shadow-sm appearance-none cursor-pointer">
+                                        <option value="Todas">Todas las acciones</option>
+                                        <option value="LOGIN_SUCCESS">✅ Login Exitoso</option>
+                                        <option value="LOGIN_FAILED">❌ Login Fallido</option>
+                                        <option value="LOGOUT">🚪 Cerrar Sesión</option>
+                                        <optgroup label="Gestión de Datos">
+                                            <option value="INSERT">➕ Insertar Datos</option>
+                                            <option value="UPDATE">📝 Actualizar Registro</option>
+                                            <option value="DELETE">🗑️ Eliminar Registro</option>
+                                        </optgroup>
+                                        <optgroup label="Gestión de Usuarios">
+                                            <option value="USER_CREATE">👤 Crear Usuario</option>
+                                            <option value="USER_UPDATE">✏️ Actualizar Usuario</option>
+                                            <option value="USER_DELETE">🚫 Eliminar Usuario</option>
+                                            <option value="USER_STATUS_CHANGE">🔄 Cambiar Estado Usuario</option>
+                                            <option value="USER_ROLE_ASSIGN">🎭 Asignar Roles</option>
+                                            <option value="USER_ROLE_REMOVE">❌ Remover Roles</option>
+                                            <option value="USER_PASSWORD_CHANGE">🔑 Cambiar Contraseña</option>
+                                        </optgroup>
+                                    </select>
+                                    <div
+                                        class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500">
+                                        <i class="fas fa-chevron-down text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fecha Desde -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Fecha
+                                    Desde</label>
+                                <input type="date" [(ngModel)]="filters.startDate"
+                                    class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm outline-none shadow-sm">
+                            </div>
+
+                            <!-- Fecha Hasta -->
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Fecha
+                                    Hasta</label>
+                                <input type="date" [(ngModel)]="filters.endDate"
+                                    class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm outline-none shadow-sm">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end mt-8 pt-5 border-t border-gray-200 space-x-4">
+                            <button (click)="clean()"
+                                class="px-6 py-2.5 text-gray-700 font-semibold rounded-xl text-sm hover:bg-gray-200 hover:text-gray-900 transition-all flex items-center focus:outline-none focus:ring-2 focus:ring-gray-300">
+                                <i class="fas fa-undo-alt mr-2"></i> Restablecer
+                            </button>
+                            <button (click)="search()"
+                                class="px-8 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl text-sm hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <i class="fas fa-filter mr-2"></i> Aplicar Filtros
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla -->
+                <div class="override-hidden rounded-xl border border-gray-200 shadow-sm">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-800 text-white">
+                                <tr>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">#</th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Usuario
+                                    </th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Módulo
+                                    </th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Acción
+                                    </th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">
+                                        Descripción</th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Fecha /
+                                        Hora</th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">IP</th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Estado
+                                    </th>
+                                    <th scope="col"
+                                        class="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">Opción
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr *ngFor="let log of paginatedLogs; let i = index"
+                                    class="hover:bg-blue-50/50 transition-colors duration-150">
+                                    <td class="px-6 py-4 text-sm text-gray-500 font-mono">{{ (currentPage - 1) *
+                                        itemsPerPage + i + 1 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs mr-3">
+                                                {{ log.username.charAt(0).toUpperCase() }}
+                                            </div>
+                                            <div class="text-sm font-semibold text-gray-900">{{ log.username }}</div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">{{
+                                        log.module || '-' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                            class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border"
+                                            [ngClass]="getActionClass(log.action) + ' border-opacity-20'">
+                                            {{ getActionLabel(log.action) }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-600 max-w-xs truncate"
+                                        title="{{ log.details }}">
+                                        {{ log.details }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                        <div class="flex flex-col">
+                                            <span class="font-medium">{{ log.timestamp | date:'dd/MM/yyyy' }}</span>
+                                            <span class="text-xs text-gray-500">{{ log.timestamp | date:'HH:mm:ss'
+                                                }}</span>
+                                        </div>
+                                    </td>
+                                    <td
+                                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono bg-gray-50 mx-2 rounded-md">
+                                        {{ log.ipAddress }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full"
+                                            [ngClass]="getStatusClass(log.status)">
+                                            {{ log.status || 'N/A' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                        <button (click)="viewDetails(log)"
+                                            class="text-blue-600 hover:text-blue-800 transition-colors focus:outline-none transform hover:scale-110"
+                                            title="Ver Detalles">
+                                            <i class="fas fa-eye text-lg"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr *ngIf="paginatedLogs.length === 0">
+                                    <td colspan="9" class="px-6 py-10 text-center text-gray-500">
+                                        <div class="flex flex-col items-center justify-center">
+                                            <i class="fas fa-search text-4xl text-gray-300 mb-3"></i>
+                                            <p class="text-lg font-medium">No se encontraron registros</p>
+                                            <p class="text-sm">Intente con otros filtros de búsqueda</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Paginación -->
+                <div class="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
+                    <div class="flex items-center space-x-3">
+                        <label class="text-sm font-medium text-gray-600">Mostrar:</label>
+                        <select [(ngModel)]="itemsPerPage" (change)="updatePagination()"
+                            class="pl-3 pr-8 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white">
+                            <option [value]="5">5</option>
+                            <option [value]="10">10</option>
+                            <option [value]="20">20</option>
+                            <option [value]="50">50</option>
+                        </select>
+                        <span class="text-sm text-gray-500">registros por página</span>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <button (click)="goToPage(1)" [disabled]="currentPage === 1"
+                            class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <i class="fas fa-angle-double-left"></i>
+                        </button>
+                        <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"
+                            class="w-24 px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center">
+                            <i class="fas fa-chevron-left mr-2"></i> Anterior
+                        </button>
+
+                        <div class="hidden md:flex space-x-1 mx-2">
+                            <span class="px-3 py-1.5 rounded-lg bg-blue-600 text-white font-bold text-sm shadow-md">
+                                {{ currentPage }}
+                            </span>
+                            <span class="px-2 py-1.5 text-gray-500 font-medium">de</span>
+                            <span
+                                class="px-3 py-1.5 rounded-lg bg-white border border-gray-300 text-gray-700 font-medium text-sm">
+                                {{ totalPages }}
+                            </span>
+                        </div>
+
+                        <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"
+                            class="w-24 px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center">
+                            Siguiente <i class="fas fa-chevron-right ml-2"></i>
+                        </button>
+                        <button (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages"
+                            class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <i class="fas fa-angle-double-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
-        <!-- Modal Detalle - Diseño Moderno -->
+        <!-- Modal permanece igual, ya tenía buen diseño -->
+        <!-- Modal Detalle - Diseño Moderno (Se mantiene tu implementación anterior que ya era buena) -->
         <div *ngIf="selectedLog" class="fixed inset-0 z-[9999] overflow-y-auto" aria-labelledby="modal-title"
             role="dialog" aria-modal="true" style="z-index: 9999;">
             <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
+
+                <!-- Overlay -->
+                <div class="fixed inset-0 transition-opacity" aria-hidden="true" (click)="closeDetails()"></div>
 
                 <div class="relative inline-block align-middle bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:max-w-3xl sm:w-full"
                     style="z-index: 10000;">
 
                     <!-- Header con gradiente -->
-                    <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 flex justify-between items-center">
+                    <div
+                        class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4 flex justify-between items-center">
                         <div class="flex items-center space-x-3">
+                            <div class="bg-white/20 p-2 rounded-lg">
+                                <i class="fas fa-clipboard-check text-white text-lg"></i>
+                            </div>
                             <div>
                                 <h3 class="text-xl font-bold text-white">Detalle de Auditoría</h3>
-                                <p class="text-blue-100 text-sm">Registro #{{ selectedLog?.id }}</p>
+                                <p class="text-blue-100 text-sm opacity-90">Registro ID: #{{ selectedLog?.id }}</p>
                             </div>
                         </div>
                         <button (click)="closeDetails()"
-                            class="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition-all duration-200 focus:outline-none">
+                            class="text-white hover:bg-white/20 rounded-full p-2 transition-all duration-200 focus:outline-none">
                             <i class="fas fa-times text-xl"></i>
                         </button>
                     </div>
 
                     <!-- Contenido del modal -->
-                    <div class="bg-gradient-to-br from-gray-50 to-white px-6 py-6">
-                        <div class="space-y-5">
+                    <div class="bg-gray-50 px-6 py-6 max-h-[70vh] overflow-y-auto">
+                        <div class="space-y-6">
 
                             <!-- Información General -->
                             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                                <div class="flex items-center mb-4">
+                                <div class="flex items-center mb-4 pb-2 border-b border-gray-100">
                                     <i class="fas fa-info-circle text-blue-600 text-lg mr-2"></i>
                                     <h4 class="text-lg font-bold text-gray-800">Información General</h4>
                                 </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                                     <!-- Usuario -->
-                                    <div class="flex items-start space-x-3">
-                                        <div class="bg-blue-50 p-2 rounded-lg">
+                                    <div class="flex items-start space-x-3 group">
+                                        <div
+                                            class="bg-blue-50 p-2.5 rounded-xl group-hover:bg-blue-100 transition-colors">
                                             <i class="fas fa-user text-blue-600"></i>
                                         </div>
                                         <div class="flex-1">
-                                            <p class="text-xs text-gray-500 font-medium">Usuario</p>
-                                            <p class="text-sm font-semibold text-gray-900">{{ selectedLog?.username }}
+                                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wide">Usuario
                                             </p>
-                                        </div>
-                                    </div>
-
-                                    <!-- Módulo -->
-                                    <div class="flex items-start space-x-3">
-                                        <div class="bg-purple-50 p-2 rounded-lg">
-                                            <i class="fas fa-cube text-purple-600"></i>
-                                        </div>
-                                        <div class="flex-1">
-                                            <p class="text-xs text-gray-500 font-medium">Módulo</p>
-                                            <p class="text-sm font-semibold text-gray-900">{{ selectedLog?.module || '-'
+                                            <p class="text-sm font-bold text-gray-900 mt-0.5">{{ selectedLog?.username
                                                 }}</p>
                                         </div>
                                     </div>
 
+                                    <!-- Módulo -->
+                                    <div class="flex items-start space-x-3 group">
+                                        <div
+                                            class="bg-purple-50 p-2.5 rounded-xl group-hover:bg-purple-100 transition-colors">
+                                            <i class="fas fa-cube text-purple-600"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wide">Módulo
+                                            </p>
+                                            <p class="text-sm font-bold text-gray-900 mt-0.5">{{ selectedLog?.module ||
+                                                '-' }}</p>
+                                        </div>
+                                    </div>
+
                                     <!-- Acción -->
-                                    <div class="flex items-start space-x-3">
-                                        <div class="bg-green-50 p-2 rounded-lg">
+                                    <div class="flex items-start space-x-3 group">
+                                        <div
+                                            class="bg-green-50 p-2.5 rounded-xl group-hover:bg-green-100 transition-colors">
                                             <i class="fas fa-bolt text-green-600"></i>
                                         </div>
                                         <div class="flex-1">
-                                            <p class="text-xs text-gray-500 font-medium">Acción</p>
-                                            <span class="inline-block px-3 py-1 rounded-full text-xs font-bold mt-1"
+                                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wide">Acción
+                                            </p>
+                                            <span
+                                                class="inline-block px-3 py-1 rounded-full text-xs font-bold mt-1 shadow-sm"
                                                 [ngClass]="getActionClass(selectedLog?.action || '')">
                                                 {{ getActionLabel(selectedLog?.action || '') }}
                                             </span>
@@ -256,38 +367,47 @@
                                     </div>
 
                                     <!-- Fecha -->
-                                    <div class="flex items-start space-x-3">
-                                        <div class="bg-orange-50 p-2 rounded-lg">
-                                            <i class="fas fa-calendar text-orange-600"></i>
+                                    <div class="flex items-start space-x-3 group">
+                                        <div
+                                            class="bg-orange-50 p-2.5 rounded-xl group-hover:bg-orange-100 transition-colors">
+                                            <i class="fas fa-calendar-alt text-orange-600"></i>
                                         </div>
                                         <div class="flex-1">
-                                            <p class="text-xs text-gray-500 font-medium">Fecha y Hora</p>
-                                            <p class="text-sm font-semibold text-gray-900">
+                                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wide">Fecha y
+                                                Hora</p>
+                                            <p class="text-sm font-bold text-gray-900 mt-0.5">
                                                 {{ selectedLog?.timestamp | date:'dd/MM/yyyy HH:mm:ss' }}
                                             </p>
                                         </div>
                                     </div>
 
                                     <!-- IP -->
-                                    <div class="flex items-start space-x-3">
-                                        <div class="bg-cyan-50 p-2 rounded-lg">
+                                    <div class="flex items-start space-x-3 group">
+                                        <div
+                                            class="bg-cyan-50 p-2.5 rounded-xl group-hover:bg-cyan-100 transition-colors">
                                             <i class="fas fa-network-wired text-cyan-600"></i>
                                         </div>
                                         <div class="flex-1">
-                                            <p class="text-xs text-gray-500 font-medium">Dirección IP</p>
-                                            <p class="text-sm font-semibold text-gray-900 font-mono">{{
-                                                selectedLog?.ipAddress }}</p>
+                                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wide">Dirección
+                                                IP</p>
+                                            <p
+                                                class="text-sm font-mono font-semibold text-gray-700 mt-0.5 bg-gray-100 px-2 py-0.5 rounded w-fit">
+                                                {{ selectedLog?.ipAddress }}
+                                            </p>
                                         </div>
                                     </div>
 
                                     <!-- Resultado -->
-                                    <div class="flex items-start space-x-3">
-                                        <div class="bg-pink-50 p-2 rounded-lg">
+                                    <div class="flex items-start space-x-3 group">
+                                        <div
+                                            class="bg-pink-50 p-2.5 rounded-xl group-hover:bg-pink-100 transition-colors">
                                             <i class="fas fa-check-circle text-pink-600"></i>
                                         </div>
                                         <div class="flex-1">
-                                            <p class="text-xs text-gray-500 font-medium">Resultado</p>
-                                            <span class="inline-block px-3 py-1 rounded-full text-xs font-bold mt-1"
+                                            <p class="text-xs text-gray-500 font-bold uppercase tracking-wide">Resultado
+                                            </p>
+                                            <span
+                                                class="inline-block px-3 py-1 rounded-full text-xs font-bold mt-1 shadow-sm"
                                                 [ngClass]="getStatusClass(selectedLog?.status || '')">
                                                 {{ selectedLog?.status || 'N/A' }}
                                             </span>
@@ -298,13 +418,13 @@
 
                             <!-- Descripción -->
                             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                                <div class="flex items-center mb-3">
+                                <div class="flex items-center mb-3 pb-2 border-b border-gray-100">
                                     <i class="fas fa-align-left text-blue-600 text-lg mr-2"></i>
-                                    <h4 class="text-lg font-bold text-gray-800">Descripción</h4>
+                                    <h4 class="text-lg font-bold text-gray-800">Descripción Detallada</h4>
                                 </div>
                                 <div
-                                    class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border-l-4 border-blue-500">
-                                    <p class="text-sm text-gray-800 leading-relaxed">{{ selectedLog?.details }}</p>
+                                    class="bg-blue-50/50 p-4 rounded-xl border border-blue-100 text-gray-800 text-sm leading-relaxed">
+                                    {{ selectedLog?.details }}
                                 </div>
                             </div>
 
@@ -315,65 +435,61 @@
                                     <i class="fas fa-history text-blue-600 text-lg mr-2"></i>
                                     <h4 class="text-lg font-bold text-gray-800">Historial de Cambios</h4>
                                 </div>
-                                <div class="overflow-x-auto">
+                                <div class="overflow-x-auto rounded-lg border border-gray-200">
                                     <table class="min-w-full text-sm">
-                                        <thead class="bg-gradient-to-r from-gray-100 to-gray-50">
+                                        <thead class="bg-gray-50">
                                             <tr>
                                                 <th
-                                                    class="px-4 py-3 text-left font-bold text-gray-700 border-b-2 border-gray-200">
+                                                    class="px-4 py-3 text-left font-bold text-gray-700 border-b border-gray-200">
                                                     Campo</th>
                                                 <th
-                                                    class="px-4 py-3 text-left font-bold text-gray-700 border-b-2 border-gray-200">
+                                                    class="px-4 py-3 text-left font-bold text-gray-700 border-b border-gray-200">
                                                     Antes</th>
                                                 <th
-                                                    class="px-4 py-3 text-left font-bold text-gray-700 border-b-2 border-gray-200">
+                                                    class="px-4 py-3 text-left font-bold text-gray-700 border-b border-gray-200">
                                                     Después</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-gray-100">
                                             <tr class="hover:bg-gray-50 transition-colors">
                                                 <td class="px-4 py-3 text-gray-700 font-medium">Información</td>
-                                                <td class="px-4 py-3 text-gray-500">—</td>
-                                                <td class="px-4 py-3 text-gray-700">Ver detalles arriba</td>
+                                                <td class="px-4 py-3 text-gray-500 italic">No disponible</td>
+                                                <td class="px-4 py-3 text-blue-600 font-medium">--</td>
                                             </tr>
                                         </tbody>
                                     </table>
-                                </div>
-                                <div class="mt-3 bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
-                                    <p class="text-xs text-yellow-800 flex items-center">
-                                        <i class="fas fa-info-circle mr-2"></i>
-                                        El historial detallado de cambios estará disponible próximamente
-                                    </p>
                                 </div>
                             </div>
 
                             <!-- Datos Técnicos -->
                             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                                <div class="flex items-center mb-3">
-                                    <i class="fas fa-cog text-blue-600 text-lg mr-2"></i>
-                                    <h4 class="text-lg font-bold text-gray-800">Datos Técnicos</h4>
+                                <div class="flex items-center mb-3 pb-2 border-b border-gray-100">
+                                    <i class="fas fa-terminal text-gray-600 text-lg mr-2"></i>
+                                    <h4 class="text-lg font-bold text-gray-800">Metadatos Técnicos</h4>
                                 </div>
                                 <div class="space-y-3">
-                                    <!-- User Agent -->
-                                    <div class="bg-gray-50 p-3 rounded-lg">
-                                        <p class="text-xs text-gray-500 font-medium mb-1">User Agent</p>
-                                        <p class="text-xs text-gray-700 break-words font-mono">{{ selectedLog?.userAgent
+                                    <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
+                                        <p class="text-xs text-gray-500 font-bold uppercase mb-1">User Agent</p>
+                                        <p class="text-xs text-gray-600 font-mono break-all">{{ selectedLog?.userAgent
                                             || '-' }}</p>
                                     </div>
-
-                                    <!-- URL y Método en grid -->
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <div class="bg-gray-50 p-3 rounded-lg">
-                                            <p class="text-xs text-gray-500 font-medium mb-1">URL</p>
-                                            <p class="text-xs text-gray-700 break-words font-mono">{{ selectedLog?.url
-                                                || '-' }}</p>
+                                        <div class="bg-gray-50 p-3 rounded-xl border border-gray-200">
+                                            <p class="text-xs text-gray-500 font-bold uppercase mb-1">URL Endpoint</p>
+                                            <p class="text-xs text-gray-600 font-mono break-all">{{ selectedLog?.url ||
+                                                '-' }}</p>
                                         </div>
-                                        <div class="bg-gray-50 p-3 rounded-lg">
-                                            <p class="text-xs text-gray-500 font-medium mb-1">Método HTTP</p>
-                                            <span
-                                                class="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-bold">
-                                                {{ selectedLog?.method || '-' }}
-                                            </span>
+                                        <div
+                                            class="bg-gray-50 p-3 rounded-xl border border-gray-200 flex items-center justify-between">
+                                            <div>
+                                                <p class="text-xs text-gray-500 font-bold uppercase mb-1">Método HTTP
+                                                </p>
+                                                <p class="text-xs text-gray-600 font-mono font-bold">{{
+                                                    selectedLog?.method || '-' }}</p>
+                                            </div>
+                                            <div class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">
+                                                HTTP
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -385,9 +501,8 @@
                     <!-- Footer -->
                     <div class="bg-gray-50 px-6 py-4 flex justify-end border-t border-gray-200">
                         <button type="button"
-                            class="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-gray-600 to-gray-700 text-white font-medium rounded-lg hover:from-gray-700 hover:to-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 shadow-md hover:shadow-lg"
+                            class="inline-flex items-center px-6 py-2.5 bg-gray-800 text-white font-bold rounded-xl hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                             (click)="closeDetails()">
-                            <i class="fas fa-times mr-2"></i>
                             Cerrar
                         </button>
                     </div>
