@@ -1,5 +1,8 @@
 package com.pe.laboratorio.security.util;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 public class HttpUtils {
@@ -41,5 +44,17 @@ public class HttpUtils {
     public static String getUserAgent(HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");
         return userAgent != null ? userAgent : "Unknown";
+    }
+
+    /**
+     * Obtiene el username del usuario autenticado actual
+     */
+    public static String getCurrentUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() &&
+                !"anonymousUser".equals(authentication.getPrincipal())) {
+            return authentication.getName();
+        }
+        return "System";
     }
 }

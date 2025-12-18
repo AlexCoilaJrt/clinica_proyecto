@@ -25,6 +25,7 @@ import com.pe.laboratorio.users.repository.DatosPersonalesRepository;
 import com.pe.laboratorio.security.service.SecurityMonitorService;
 import com.pe.laboratorio.security.entity.FailureReason;
 import com.pe.laboratorio.security.util.HttpUtils;
+import com.pe.laboratorio.reports.audit.service.AuditService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final SecurityMonitorService securityMonitorService;
+    private final AuditService auditService;
 
     public LoginResponse login(LoginRequest request, HttpServletRequest httpRequest) {
         String ipAddress = HttpUtils.getClientIpAddress(httpRequest);
@@ -133,6 +135,24 @@ public class AuthService {
         String token = jwtService.generateToken(user);
         securityMonitorService.registerSuccessfulLogin(user, ipAddress, userAgent, token);
 
+        // Auditoría
+        // Auditoría
+        try {
+            auditService.logAction(
+                    "LOGIN",
+                    "LOGIN_SUCCESS",
+                    "Usuario " + user.getUsername() + " ha iniciado sesión exitosamente.",
+                    user.getUsername(),
+                    user.getId(),
+                    ipAddress,
+                    "Éxito",
+                    userAgent,
+                    "/api/auth/login",
+                    "POST");
+        } catch (Exception e) {
+            log.error("Error logging audit for login", e);
+        }
+
         // Obtener nombres de roles
         Set<String> roleNames = user.getRoles().stream()
                 .map(Role::getName)
@@ -182,6 +202,7 @@ public class AuthService {
                 .apepat(request.getLastName())
                 .fonLocal(request.getPhone())
                 .active(true)
+                .idPersonal((long) (Math.random() * 100000000))
                 .roles(new HashSet<>())
                 .build();
 

@@ -19,6 +19,10 @@ import com.pe.laboratorio.users.dto.UserResponse;
 import com.pe.laboratorio.users.entity.DatosPersonales;
 import com.pe.laboratorio.users.repository.DatosPersonalesRepository;
 import com.pe.laboratorio.users.service.UserService;
+import com.pe.laboratorio.reports.audit.service.AuditService;
+import com.pe.laboratorio.security.util.HttpUtils;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +36,8 @@ public class UserServiceImpl implements UserService {
     private final DatosPersonalesRepository datosPersonalesRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditService auditService;
+    private final HttpServletRequest httpRequest;
 
     @Override
     public UserResponse createUser(CreateUserRequest request) {
@@ -56,6 +62,7 @@ public class UserServiceImpl implements UserService {
                 .apepat(request.getLastName())
                 .fonLocal(request.getPhone())
                 .active(true)
+                .idPersonal((long) (Math.random() * 100000000)) // Generar ID aleatorio seguro
                 .roles(new HashSet<>())
                 .build();
 
@@ -70,6 +77,24 @@ public class UserServiceImpl implements UserService {
 
         DatosPersonales savedUser = datosPersonalesRepository.save(datosPersonales);
         log.info("User created successfully: {}", savedUser.getLogin());
+
+        // Auditoría
+        try {
+            auditService.logAction(
+                    "USUARIOS",
+                    "USER_CREATE",
+                    "Usuario creado: " + savedUser.getLogin() + " (Email: " + savedUser.getEmail() + ") - Roles: "
+                            + (request.getRoleIds() != null ? request.getRoleIds().size() : 0),
+                    HttpUtils.getCurrentUsername(),
+                    savedUser.getId(),
+                    HttpUtils.getClientIpAddress(httpRequest),
+                    "Éxito",
+                    HttpUtils.getUserAgent(httpRequest),
+                    "/api/v1/users",
+                    "POST");
+        } catch (Exception e) {
+            log.error("Error logging audit for create user", e);
+        }
 
         return mapToResponse(savedUser);
     }
@@ -116,6 +141,23 @@ public class UserServiceImpl implements UserService {
 
         DatosPersonales updatedUser = datosPersonalesRepository.save(datosPersonales);
         log.info("User updated successfully: {}", updatedUser.getLogin());
+
+        // Auditoría
+        try {
+            auditService.logAction(
+                    "USUARIOS",
+                    "USER_UPDATE",
+                    "Usuario actualizado: " + updatedUser.getLogin() + " (ID: " + id + ")",
+                    HttpUtils.getCurrentUsername(),
+                    id,
+                    HttpUtils.getClientIpAddress(httpRequest),
+                    "Éxito",
+                    HttpUtils.getUserAgent(httpRequest),
+                    "/api/v1/users/" + id,
+                    "PUT");
+        } catch (Exception e) {
+            log.error("Error logging audit for update user", e);
+        }
 
         return mapToResponse(updatedUser);
     }
@@ -180,6 +222,23 @@ public class UserServiceImpl implements UserService {
         datosPersonalesRepository.save(datosPersonales);
 
         log.info("User deleted (soft delete): {}", datosPersonales.getLogin());
+
+        // Auditoría
+        try {
+            auditService.logAction(
+                    "USUARIOS",
+                    "USER_DELETE",
+                    "Usuario eliminado (soft delete): " + datosPersonales.getLogin() + " (ID: " + id + ")",
+                    HttpUtils.getCurrentUsername(),
+                    id,
+                    HttpUtils.getClientIpAddress(httpRequest),
+                    "Éxito",
+                    HttpUtils.getUserAgent(httpRequest),
+                    "/api/v1/users/" + id,
+                    "DELETE");
+        } catch (Exception e) {
+            log.error("Error logging audit for delete user", e);
+        }
     }
 
     @Override
@@ -198,6 +257,24 @@ public class UserServiceImpl implements UserService {
         datosPersonalesRepository.save(datosPersonales);
 
         log.info("User status changed: {} - active: {}", datosPersonales.getLogin(), active);
+
+        // Auditoría
+        try {
+            auditService.logAction(
+                    "USUARIOS",
+                    "USER_STATUS_CHANGE",
+                    "Cambio de estado usuario: " + datosPersonales.getLogin() + " a "
+                            + (active ? "ACTIVO" : "INACTIVO"),
+                    HttpUtils.getCurrentUsername(),
+                    id,
+                    HttpUtils.getClientIpAddress(httpRequest),
+                    "Éxito",
+                    HttpUtils.getUserAgent(httpRequest),
+                    "/api/v1/users/" + id + "/status",
+                    "PATCH");
+        } catch (Exception e) {
+            log.error("Error logging audit for user status change", e);
+        }
     }
 
     @Override
@@ -216,6 +293,23 @@ public class UserServiceImpl implements UserService {
         DatosPersonales updatedUser = datosPersonalesRepository.save(datosPersonales);
 
         log.info("Roles assigned successfully to user: {}", datosPersonales.getLogin());
+
+        // Auditoría
+        try {
+            auditService.logAction(
+                    "USUARIOS",
+                    "USER_ROLE_ASSIGN",
+                    "Roles asignados a usuario " + datosPersonales.getLogin() + ": " + roleIds,
+                    HttpUtils.getCurrentUsername(),
+                    userId,
+                    HttpUtils.getClientIpAddress(httpRequest),
+                    "Éxito",
+                    HttpUtils.getUserAgent(httpRequest),
+                    "/api/v1/users/" + userId + "/roles",
+                    "POST");
+        } catch (Exception e) {
+            log.error("Error logging audit for assign roles", e);
+        }
 
         return mapToResponse(updatedUser);
     }
@@ -243,6 +337,23 @@ public class UserServiceImpl implements UserService {
 
         log.info("Roles removed successfully from user: {}", datosPersonales.getLogin());
 
+        // Auditoría
+        try {
+            auditService.logAction(
+                    "USUARIOS",
+                    "USER_ROLE_REMOVE",
+                    "Roles removidos de usuario " + datosPersonales.getLogin() + ": " + roleIds,
+                    HttpUtils.getCurrentUsername(),
+                    userId,
+                    HttpUtils.getClientIpAddress(httpRequest),
+                    "Éxito",
+                    HttpUtils.getUserAgent(httpRequest),
+                    "/api/v1/users/" + userId + "/roles",
+                    "DELETE");
+        } catch (Exception e) {
+            log.error("Error logging audit for remove roles", e);
+        }
+
         return mapToResponse(updatedUser);
     }
 
@@ -268,6 +379,23 @@ public class UserServiceImpl implements UserService {
         datosPersonalesRepository.save(datosPersonales);
 
         log.info("Password changed successfully for user: {}", datosPersonales.getLogin());
+
+        // Auditoría
+        try {
+            auditService.logAction(
+                    "USUARIOS",
+                    "USER_PASSWORD_CHANGE",
+                    "Cambio de contraseña para usuario: " + datosPersonales.getLogin(),
+                    HttpUtils.getCurrentUsername(),
+                    userId,
+                    HttpUtils.getClientIpAddress(httpRequest),
+                    "Éxito",
+                    HttpUtils.getUserAgent(httpRequest),
+                    "/api/v1/users/" + userId + "/change-password",
+                    "POST");
+        } catch (Exception e) {
+            log.error("Error logging audit for password change", e);
+        }
     }
 
     // ========================================

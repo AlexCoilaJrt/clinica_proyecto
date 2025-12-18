@@ -15,7 +15,10 @@ import com.pe.laboratorio.labarea.dto.LabAreaResponse;
 import com.pe.laboratorio.labarea.entity.LabArea;
 import com.pe.laboratorio.labarea.repository.LabAreaRepository;
 import com.pe.laboratorio.labarea.service.LabAreaService;
+import com.pe.laboratorio.reports.audit.service.AuditService;
+import com.pe.laboratorio.security.util.HttpUtils;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,6 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 public class LabAreaServiceImpl implements LabAreaService {
 
     private final LabAreaRepository labAreaRepository;
+    private final AuditService auditService;
+    private final HttpServletRequest httpRequest;
 
     @Override
     public LabAreaResponse create(LabAreaRequest request) {
@@ -45,6 +50,19 @@ public class LabAreaServiceImpl implements LabAreaService {
         LabArea saved = labAreaRepository.save(labArea);
         log.info("Lab area created successfully with ID: {}", saved.getId());
 
+        // Auditoría
+        auditService.logAction(
+                "AREA",
+                "INSERT",
+                "Se creó el área " + saved.getDescripcion() + " con código " + saved.getCodigo() + ".",
+                HttpUtils.getCurrentUsername(),
+                null,
+                HttpUtils.getClientIpAddress(httpRequest),
+                "Éxito",
+                HttpUtils.getUserAgent(httpRequest),
+                httpRequest.getRequestURI(),
+                httpRequest.getMethod());
+
         return mapToResponse(saved);
     }
 
@@ -60,11 +78,29 @@ public class LabAreaServiceImpl implements LabAreaService {
             throw new ValidationException("El código ya está en uso por otra área");
         }
 
+        // Guardar valores anteriores para auditoría
+        String oldCodigo = labArea.getCodigo();
+        String oldDescripcion = labArea.getDescripcion();
+
         labArea.setCodigo(request.getCodigo().toUpperCase());
         labArea.setDescripcion(request.getDescripcion().toUpperCase());
 
         LabArea updated = labAreaRepository.save(labArea);
         log.info("Lab area updated successfully: {}", updated.getId());
+
+        // Auditoría
+        auditService.logAction(
+                "AREA",
+                "UPDATE",
+                "Se actualizó el área ID: " + id + ". Código: " + oldCodigo + " → " + updated.getCodigo() +
+                        ", Descripción: " + oldDescripcion + " → " + updated.getDescripcion(),
+                HttpUtils.getCurrentUsername(),
+                null,
+                HttpUtils.getClientIpAddress(httpRequest),
+                "Éxito",
+                HttpUtils.getUserAgent(httpRequest),
+                httpRequest.getRequestURI(),
+                httpRequest.getMethod());
 
         return mapToResponse(updated);
     }
@@ -121,6 +157,19 @@ public class LabAreaServiceImpl implements LabAreaService {
         labAreaRepository.save(labArea);
 
         log.info("Lab area deleted (soft delete): {}", id);
+
+        // Auditoría
+        auditService.logAction(
+                "AREA",
+                "DELETE",
+                "AREA ELIMINADA: " + labArea.getDescripcion() + " (Código: " + labArea.getCodigo() + ")",
+                HttpUtils.getCurrentUsername(),
+                null,
+                HttpUtils.getClientIpAddress(httpRequest),
+                "Éxito",
+                HttpUtils.getUserAgent(httpRequest),
+                httpRequest.getRequestURI(),
+                httpRequest.getMethod());
     }
 
     @Override
