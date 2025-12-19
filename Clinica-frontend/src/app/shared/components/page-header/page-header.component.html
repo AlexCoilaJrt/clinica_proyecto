@@ -1,0 +1,23 @@
+    <div [class]="'bg-gradient-to-r ' + gradientFrom + ' ' + gradientTo + ' px-8 py-6'">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
+            <!-- Icono dinámico basado en el tipo -->
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getIconPath()" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-3xl font-bold text-white">{{ title }}</h2>
+            <p *ngIf="subtitle" class="text-blue-100 text-sm mt-1">{{ subtitle }}</p>
+          </div>
+        </div>
+        
+        <!-- Contador opcional -->
+        <div *ngIf="showCounter" class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
+          <p class="text-white text-sm font-medium">
+            {{ counterLabel }}: <span class="text-2xl font-bold">{{ counterValue }}</span>
+          </p>
+        </div>
+      </div>
+    </div>

@@ -1,0 +1,693 @@
+<!-- Header Component -->
+<app-header></app-header>
+
+<div class="min-h-screen bg-linear-to-br from-gray-50 to-blue-50 flex">
+    <app-sidebar></app-sidebar>
+
+    <div class="flex-1 p-4 md:p-8 min-w-0">
+        <app-breadcrumb [items]="breadcrumbItems" [showIcon]="true">
+        </app-breadcrumb>
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+
+            <app-page-header title="{{tituloPagina}}" subtitle="Gestión de exámenes y pruebas diagnósticas"
+                iconType="examenes" [counterValue]="totalElements" counterLabel="Total" [showCounter]="true">
+            </app-page-header>
+
+            <div class="p-8">
+                <!-- Botón Añadir Reutilizable -->
+                <div class="flex justify-end mb-6">
+                    <app-primary-button label="Añadir Nuevo Examen" icon="plus" color="blue" size="md"
+                        (btnClick)="openCreateModal()">
+                    </app-primary-button>
+                </div>
+                <div class="relative w-full">
+                    <div class="overflow-x-auto pb-4 scrollbar-thin custom-scrollbar">
+                        <div class="inline-block min-w-full align-middle">
+                            <app-tabla-general [datos]="exams" [currentPage]="currentPage" [columnas]="columnasExamenes"
+                                (onEdit)="openEditModal($event)" (onDelete)="deleteExam($event)"
+                                (viewSubExams)="viewSubExams($event)" (viewDetails)="viewDetails($event)">
+                            </app-tabla-general>
+                        </div>
+                    </div>
+                </div>
+                <app-pagination [currentPage]="currentPage" [totalPages]="totalPages" [pageSize]="pageSize"
+                    [pageSizeOptions]="[10, 25, 50, 100]" (pageChange)="changePage($event)"
+                    (pageSizeChange)="changePageSize($event)">
+                </app-pagination>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-modal [isOpen]="showModal" [title]="isEditMode ? 'Editar Examen' : 'Nuevo Examen'" size="lg"
+    iconType="document" (modalClose)="closeModal()">
+
+    <!-- Contenido del formulario -->
+    <form (ngSubmit)="saveExam()">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[70vh] overflow-y-auto pr-2">
+
+            <!-- Código -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Código <span class="text-red-500">*</span>
+                </label>
+                <input type="text" [(ngModel)]="formData.codigo" name="codigo" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Ej: 0001241" maxlength="20">
+            </div>
+
+            <!-- Nombre -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Nombre <span class="text-red-500">*</span>
+                </label>
+                <input type="text" [(ngModel)]="formData.nombre" name="nombre" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Ej: HEMOGRAMA COMPLETO" maxlength="200">
+            </div>
+
+            <!-- Área -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Área <span class="text-red-500">*</span>
+                </label>
+                <select [(ngModel)]="formData.areaId" name="areaId" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option [value]="0">Seleccione un área</option>
+                    <option *ngFor="let area of areas" [value]="area.id">
+                        {{ area.codigo }} - {{ area.descripcion }}
+                    </option>
+                </select>
+            </div>
+
+            <!-- Tipo de Examen -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Tipo de Examen <span class="text-red-500">*</span>
+                </label>
+                <select [(ngModel)]="formData.tipoExamenId" name="tipoExamenId" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option *ngFor="let tipo of tiposExamen" [value]="tipo.id">
+                        {{ tipo.nombre }}
+                    </option>
+                </select>
+            </div>
+
+            <!-- Método -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Método
+                </label>
+                <input type="text" [(ngModel)]="formData.metodo" name="metodo"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Ej: Colorimétrico" maxlength="200">
+            </div>
+
+            <!-- Unidad de Medida -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Unidad de Medida
+                </label>
+                <input type="text" [(ngModel)]="formData.unidadMedida" name="unidadMedida"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Ej: mg/dL" maxlength="50">
+            </div>
+
+            <!-- Tipo de Muestra -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Tipo de Muestra
+                </label>
+                <select [(ngModel)]="formData.tipoMuestra" name="tipoMuestra"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option [ngValue]="undefined">Seleccione</option>
+                    <option *ngFor="let tipo of tiposMuestra" [value]="tipo">
+                        {{ getTipoMuestraLabel(tipo) }}
+                    </option>
+                </select>
+            </div>
+
+            <!-- Tipo de Resultado -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Tipo de Resultado <span class="text-red-500">*</span>
+                </label>
+                <select [(ngModel)]="formData.tipoResultado" name="tipoResultado" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option *ngFor="let tipo of tiposResultado" [value]="tipo">
+                        {{ getTipoResultadoLabel(tipo) }}
+                    </option>
+                </select>
+            </div>
+
+            <!-- Precio -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Precio (S/)
+                </label>
+                <input type="number" [(ngModel)]="formData.precio" name="precio" step="0.01" min="0"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="0.00">
+            </div>
+
+            <!-- Tiempo de Entrega -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Tiempo de Entrega (horas)
+                </label>
+                <input type="number" [(ngModel)]="formData.tiempoEntrega" name="tiempoEntrega" min="0"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="24">
+            </div>
+
+            <!-- Valor Mínimo -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Valor Mínimo Normal
+                </label>
+                <input type="number" [(ngModel)]="formData.valorMinimo" name="valorMinimo" step="0.01"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- Valor Máximo -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Valor Máximo Normal
+                </label>
+                <input type="number" [(ngModel)]="formData.valorMaximo" name="valorMaximo" step="0.01"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- Valor Crítico Mín -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Valor Crítico Mínimo
+                </label>
+                <input type="number" [(ngModel)]="formData.valorCriticoMin" name="valorCriticoMin" step="0.01"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- Valor Crítico Máx -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Valor Crítico Máximo
+                </label>
+                <input type="number" [(ngModel)]="formData.valorCriticoMax" name="valorCriticoMax" step="0.01"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- Es Perfil -->
+            <div class="flex items-center md:col-span-2">
+                <input type="checkbox" [(ngModel)]="formData.esPerfil" name="esPerfil" id="esPerfil"
+                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                <label for="esPerfil" class="ml-2 text-sm font-medium text-gray-700">
+                    Es un perfil/panel (tiene subexámenes)
+                </label>
+            </div>
+
+            <!-- Indicaciones (col-span-2) -->
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">
+                    Indicaciones Pre-Analíticas
+                </label>
+                <textarea [(ngModel)]="formData.indicaciones" name="indicaciones" rows="3"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Ej: Ayuno de 8 horas" maxlength="1000"></textarea>
+            </div>
+
+            <!-- Sección de Subexámenes -->
+            <div *ngIf="formData.esPerfil" class="md:col-span-2 border-t pt-4 mt-2">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Subexámenes</h3>
+                    <button type="button" (click)="addSubExam()"
+                        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center gap-2">
+                        <span>+</span> Añadir Subexamen
+                    </button>
+                </div>
+
+                <!-- Lista de Subexámenes -->
+                <div *ngIf="subExams.length > 0" class="space-y-3 mb-4">
+                    <div *ngFor="let subExam of subExams; let i = index"
+                        class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-800">{{ subExam.codigo }} - {{ subExam.nombre }}</p>
+                                <p class="text-sm text-gray-600">Orden: {{ subExam.ordenVisualizacion }}</p>
+                                <p *ngIf="subExam.unidadMedida" class="text-sm text-gray-600">Unidad: {{ subExam.unidadMedida }}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button type="button" (click)="editSubExam(i)"
+                                    class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm">
+                                    Editar
+                                </button>
+                                <button type="button" (click)="removeSubExam(i)"
+                                    class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm">
+                                    Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulario de Subexamen -->
+                <div *ngIf="showSubExamForm" class="bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
+                    <h4 class="font-semibold text-gray-800 mb-3">
+                        {{ editingSubExamIndex !== null ? 'Editar Subexamen' : 'Nuevo Subexamen' }}
+                    </h4>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <!-- Código -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Código <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" [(ngModel)]="subExamForm.codigo" name="subExamCodigo"
+                                [ngModelOptions]="{standalone: true}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Ej: HB001" maxlength="50">
+                        </div>
+
+                        <!-- Nombre -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Nombre <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" [(ngModel)]="subExamForm.nombre" name="subExamNombre"
+                                [ngModelOptions]="{standalone: true}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Ej: Hemoglobina" maxlength="200">
+                        </div>
+
+                        <!-- Unidad de Medida -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Unidad de Medida
+                            </label>
+                            <input type="text" [(ngModel)]="subExamForm.unidadMedida" name="subExamUnidad"
+                                [ngModelOptions]="{standalone: true}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Ej: g/dL" maxlength="50">
+                        </div>
+
+                        <!-- Tipo de Resultado -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Tipo de Resultado <span class="text-red-500">*</span>
+                            </label>
+                            <select [(ngModel)]="subExamForm.tipoResultado" name="subExamTipoResultado"
+                                [ngModelOptions]="{standalone: true}"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option *ngFor="let tipo of tiposResultado" [value]="tipo">
+                                    {{ getTipoResultadoLabel(tipo) }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Orden de Visualización -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Orden de Visualización <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" [(ngModel)]="subExamForm.ordenVisualizacion" name="subExamOrden"
+                                [ngModelOptions]="{standalone: true}" min="1"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="1">
+                        </div>
+
+                        <!-- Valor Mínimo -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Valor Mínimo Normal
+                            </label>
+                            <input type="number" [(ngModel)]="subExamForm.valorMinimo" name="subExamValorMin"
+                                [ngModelOptions]="{standalone: true}" step="0.01"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Valor Máximo -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Valor Máximo Normal
+                            </label>
+                            <input type="number" [(ngModel)]="subExamForm.valorMaximo" name="subExamValorMax"
+                                [ngModelOptions]="{standalone: true}" step="0.01"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Valor Crítico Mín -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Valor Crítico Mínimo
+                            </label>
+                            <input type="number" [(ngModel)]="subExamForm.valorCriticoMin" name="subExamCriticoMin"
+                                [ngModelOptions]="{standalone: true}" step="0.01"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Valor Crítico Máx -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Valor Crítico Máximo
+                            </label>
+                            <input type="number" [(ngModel)]="subExamForm.valorCriticoMax" name="subExamCriticoMax"
+                                [ngModelOptions]="{standalone: true}" step="0.01"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Observaciones -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Observaciones
+                            </label>
+                            <textarea [(ngModel)]="subExamForm.observaciones" name="subExamObservaciones"
+                                [ngModelOptions]="{standalone: true}" rows="2"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Observaciones adicionales" maxlength="1000"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Botones del Subformulario -->
+                    <div class="flex justify-end gap-2 mt-3">
+                        <button type="button" (click)="cancelSubExam()"
+                            class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm">
+                            Cancelar
+                        </button>
+                        <button type="button" (click)="saveSubExamToList()"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                            {{ editingSubExamIndex !== null ? 'Actualizar' : 'Agregar' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Botones del formulario principal -->
+        <div class="flex justify-end gap-3 mt-6">
+            <button type="button" (click)="closeModal()"
+                class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                Cancelar
+            </button>
+            <button type="submit"
+                class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+            </button>
+        </div>
+    </form>
+</app-modal>
+
+<!-- Modal de Detalles del Examen -->
+<app-modal [isOpen]="showDetailsModal" [title]="'Detalles del Examen'" size="xl" iconType="info"
+    (modalClose)="closeDetailsModal()">
+
+    <div *ngIf="selectedExam" class="max-h-[80vh] overflow-y-auto pr-2 custom-scroll space-y-6">
+        <div class=" items-center justify-center p-4">
+            <!-- Información Básica -->
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">Información Básica</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Código</p>
+                        <p class="text-lg font-bold text-gray-900">{{ selectedExam.codigo }}</p>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 shadow-sm md:col-span-2">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Nombre del Examen</p>
+                        <p class="text-lg font-bold text-gray-900">{{ selectedExam.nombre }}</p>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Tipo de Examen</p>
+                        <span class="inline-flex items-center px-3 py-1 rounded-lg text-sm font-semibold" [ngClass]="{
+                            'bg-green-100 text-green-800': selectedExam.tipoExamenNombre === 'NUMÉRICO',
+                            'bg-blue-100 text-blue-800': selectedExam.tipoExamenNombre === 'TEXTO',
+                            'bg-purple-100 text-purple-800': selectedExam.tipoExamenNombre === 'OPCIÓN'
+                          }">
+                            {{ selectedExam.tipoExamenNombre }}
+                        </span>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Tipo de Resultado</p>
+                        <p class="text-base font-medium text-gray-900">{{ selectedExam.tipoResultado }}</p>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Tipo de Perfil</p>
+                        <span *ngIf="selectedExam.esPerfil"
+                            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-purple-100 text-purple-800">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Es Perfil
+                        </span>
+                        <span *ngIf="!selectedExam.esPerfil"
+                            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-gray-100 text-gray-800">
+                            Examen Simple
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Área y Clasificación -->
+            <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-purple-600 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">Área y Clasificación</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-2">Área de Laboratorio</p>
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-bold bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                </svg>
+                                {{ selectedExam.areaNombre }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">Código: {{ selectedExam.areaCodigo }}</p>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-2">Tipo de Muestra</p>
+                        <div class="flex items-center gap-2">
+                            <div class="w-10 h-10 rounded-lg flex items-center justify-center" [ngClass]="{
+                               'bg-red-100': selectedExam.tipoMuestra === 'SANGRE',
+                               'bg-yellow-100': selectedExam.tipoMuestra === 'ORINA',
+                               'bg-green-100': selectedExam.tipoMuestra === 'HECES',
+                               'bg-blue-100': selectedExam.tipoMuestra !== 'SANGRE' && selectedExam.tipoMuestra !== 'ORINA' && selectedExam.tipoMuestra !== 'HECES'
+                             }">
+                                <svg class="w-5 h-5" [ngClass]="{
+                                   'text-red-600': selectedExam.tipoMuestra === 'SANGRE',
+                                   'text-yellow-600': selectedExam.tipoMuestra === 'ORINA',
+                                   'text-green-600': selectedExam.tipoMuestra === 'HECES',
+                                   'text-blue-600': selectedExam.tipoMuestra !== 'SANGRE' && selectedExam.tipoMuestra !== 'ORINA' && selectedExam.tipoMuestra !== 'HECES'
+                                 }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                                </svg>
+                            </div>
+                            <span class="text-base font-bold text-gray-900">{{ selectedExam.tipoMuestra }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metodología -->
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-green-600 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">Metodología</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Método</p>
+                        <p class="text-base font-medium text-gray-900">{{ selectedExam.metodo || 'No especificado' }}
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Unidad de Medida</p>
+                        <p class="text-base font-medium text-gray-900">{{ selectedExam.unidadMedida || 'No especificado'
+                            }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Valores de Referencia -->
+            <div class="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-6 border border-orange-200">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-orange-600 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">Valores de Referencia</h3>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white rounded-lg p-4 shadow-sm border-l-4 border-blue-500">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Mínimo</p>
+                        <p class="text-xl font-bold text-blue-600">
+                            {{ selectedExam.valorMinimo !== null ? selectedExam.valorMinimo : '-' }}
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 shadow-sm border-l-4 border-green-500">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Máximo</p>
+                        <p class="text-xl font-bold text-green-600">
+                            {{ selectedExam.valorMaximo !== null ? selectedExam.valorMaximo : '-' }}
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 shadow-sm border-l-4 border-orange-500">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Crítico Mín</p>
+                        <p class="text-xl font-bold text-orange-600">
+                            {{ selectedExam.valorCriticoMin !== null ? selectedExam.valorCriticoMin : '-' }}
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 shadow-sm border-l-4 border-red-500">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Crítico Máx</p>
+                        <p class="text-xl font-bold text-red-600">
+                            {{ selectedExam.valorCriticoMax !== null ? selectedExam.valorCriticoMax : '-' }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logística y Costos -->
+            <div class="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl p-6 border border-cyan-200">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-cyan-600 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">Logística y Costos</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Precio</p>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span *ngIf="selectedExam.precio" class="text-2xl font-bold text-gray-900">
+                                S/ {{ selectedExam.precio | number:'1.2-2' }}
+                            </span>
+                            <span *ngIf="!selectedExam.precio" class="text-xl text-gray-400">No definido</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Tiempo de Entrega</p>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-2xl font-bold text-gray-900">{{ selectedExam.tiempoEntrega }} horas</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Indicaciones -->
+            <div *ngIf="selectedExam.indicaciones"
+                class="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl p-6 border border-yellow-200">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-yellow-600 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">Indicaciones para el Paciente</h3>
+                </div>
+
+                <div class="bg-white rounded-lg p-4 shadow-sm">
+                    <p class="text-base text-gray-700 leading-relaxed">{{ selectedExam.indicaciones }}</p>
+                </div>
+            </div>
+
+            <!-- Información de Registro -->
+            <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-gray-600 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800">Información de Registro</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">ID del Registro</p>
+                        <p class="text-lg font-bold text-gray-900">#{{ selectedExam.id }}</p>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Fecha de Creación</p>
+                        <p class="text-base font-medium text-gray-900">{{ selectedExam.createdAt | date: 'dd/MM/yyyy
+                            HH:mm'
+                            }}</p>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-4 shadow-sm">
+                        <p class="text-xs font-semibold text-gray-500 uppercase mb-1">Última Actualización</p>
+                        <p class="text-base font-medium text-gray-900">{{ selectedExam.updatedAt | date: 'dd/MM/yyyy
+                            HH:mm'
+                            }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estado Actual -->
+            <div class="flex items-center justify-center p-4">
+                <span *ngIf="selectedExam.active"
+                    class="inline-flex items-center px-6 py-3 rounded-full text-base font-bold bg-green-100 text-green-800">
+                    <span class="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse"></span>
+                    Examen Activo
+                </span>
+                <span *ngIf="!selectedExam.active"
+                    class="inline-flex items-center px-6 py-3 rounded-full text-base font-bold bg-red-100 text-red-800">
+                    <span class="w-3 h-3 bg-red-500 rounded-full mr-3"></span>
+                    Examen Inactivo
+                </span>
+            </div>
+        </div>
+    </div>
+</app-modal>

@@ -5,6 +5,7 @@ import { interval, Subscription } from 'rxjs';
 
 import { HttpClientModule } from '@angular/common/http';
 import { AuthService, TokenInfo } from '../../features/auth/services/auth.service';
+import { SidebarService } from '../sidebar/sidebar.service';
 
 @Component({
   selector: 'app-header',
@@ -38,7 +39,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public sidebarService: SidebarService
   ) { }
 
   ngOnInit() {
@@ -55,7 +57,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
       try {
         const user = JSON.parse(userStorage);
         this.usuarioActual = user.firstName + ' ' + (user.lastName || '');
-        console.log('Usuario cargado en sidebar:', this.usuarioActual);
         this.userGender = user.sexo || 'null';
       } catch (e) {
         this.usuarioActual = 'Usuario';

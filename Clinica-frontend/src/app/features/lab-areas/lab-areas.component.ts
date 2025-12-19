@@ -3,14 +3,32 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LabAreaService } from '../../services/lab-area.service';
-import { LabArea, PageResponse } from '../../models/lab-area.model';
+import { LabArea } from '../../models/lab-area.model';
 import { HeaderComponent } from "../../shared/header/header.component";
 import { SidebarComponent } from "../../shared/sidebar/sidebar.component";
+import { Columna, TablaGeneralComponent } from "../../shared/components/tabla-general/tabla-general.component";
+import { BreadcrumbComponent, BreadcrumbItem } from '../../shared/components/breadcrumb/breadcrumb';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header';
+import { PrimaryButtonComponent } from '../../shared/components/primary-button/primary-button';
+import { PaginationComponent } from '../../shared/components/pagination/pagination';
+import { ModalComponent } from '../../shared/components/modal/modal';
+
 
 @Component({
   selector: 'app-lab-areas',
   standalone: true,
-  imports: [CommonModule, FormsModule, HeaderComponent, SidebarComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    HeaderComponent, 
+    SidebarComponent, 
+    TablaGeneralComponent,
+    BreadcrumbComponent,
+    PageHeaderComponent,
+    PrimaryButtonComponent,
+    PaginationComponent,
+    ModalComponent
+  ],
   templateUrl: './lab-areas.component.html',
   styleUrls: ['./lab-areas.component.css']
 })
@@ -21,86 +39,65 @@ export class LabAreasComponent implements OnInit {
   totalPages: number = 0;
   totalElements: number = 0;
 
-  // Modal state
+  
   showModal: boolean = false;
   isEditMode: boolean = false;
   selectedArea: LabArea | null = null;
 
-  // Form data
+  
   formData = {
     codigo: '',
     descripcion: ''
   };
 
-  public Math = Math;
   
-  // Search
-  searchQuery: string = '';
+  breadcrumbItems: BreadcrumbItem[] = [
+    { label: 'Configuración', route: '/configuraciones' },
+    { label: 'Áreas de Laboratorio' }
+  ];
+
+  
+  columnasAreas: Columna[] = [
+    { field: 'id', header: 'N°', tipo: 'index' ,subField:['areaCodigo']},
+    { field: 'codigo', header: 'Código', tipo: 'badge' ,subField:['areaCodigo']},
+    { field: 'descripcion', header: 'Descripción del Área', tipo: 'area-badge' ,subField:['areaCodigo']},
+    { field: 'createdAt', header: 'Fecha de Creación', tipo: 'date' ,subField:['areaCodigo']}
+  ];
 
   constructor(
     private labAreaService: LabAreaService,
     private router: Router,
-    private cdr: ChangeDetectorRef  // Inyectar ChangeDetectorRef
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
-    // Usar setTimeout para evitar el error de detección de cambios
     setTimeout(() => {
       this.loadAreas();
     });
   }
 
   loadAreas(): void {
-    if (this.searchQuery.trim()) {
-      this.searchAreas();
-    } else {
-      this.labAreaService.getAll(this.currentPage, this.pageSize).subscribe({
-        next: (response) => {
-          if (response.success && response.data) {
-            this.areas = response.data.content;
-            this.totalPages = response.data.totalPages;
-            this.totalElements = response.data.totalElements;
-            this.currentPage = response.data.number;
-            this.cdr.detectChanges(); // Forzar detección de cambios
-            console.log('Áreas cargadas:', this.areas);
-          }
-        },
-        error: (error) => {
-          console.error('Error al cargar áreas:', error);
-          alert('Error al cargar las áreas de laboratorio');
-        }
-      });
-    }
-  }
-
-  searchAreas(): void {
-    this.labAreaService.search(this.searchQuery, this.currentPage, this.pageSize).subscribe({
+    this.labAreaService.getAll(this.currentPage, this.pageSize).subscribe({
       next: (response) => {
         if (response.success && response.data) {
           this.areas = response.data.content;
           this.totalPages = response.data.totalPages;
           this.totalElements = response.data.totalElements;
+          this.currentPage = response.data.number;
           this.cdr.detectChanges();
         }
       },
       error: (error) => {
-        console.error('Error en búsqueda:', error);
+        console.error('Error al cargar áreas:', error);
+        alert('Error al cargar las áreas de laboratorio');
       }
     });
-  }
-
-  onSearch(): void {
-    this.currentPage = 0;
-    this.loadAreas();
   }
 
   openCreateModal(): void {
     this.isEditMode = false;
     this.selectedArea = null;
-    this.formData = {
-      codigo: '',
-      descripcion: ''
-    };
+    this.formData = { codigo: '', descripcion: '' };
     this.showModal = true;
   }
 
@@ -117,10 +114,7 @@ export class LabAreasComponent implements OnInit {
   closeModal(): void {
     this.showModal = false;
     this.selectedArea = null;
-    this.formData = {
-      codigo: '',
-      descripcion: ''
-    };
+    this.formData = { codigo: '', descripcion: '' };
   }
 
   saveArea(): void {
@@ -135,7 +129,6 @@ export class LabAreasComponent implements OnInit {
     };
 
     if (this.isEditMode && this.selectedArea) {
-      // Actualizar
       this.labAreaService.update(this.selectedArea.id, request).subscribe({
         next: (response) => {
           if (response.success) {
@@ -150,7 +143,6 @@ export class LabAreasComponent implements OnInit {
         }
       });
     } else {
-      // Crear
       this.labAreaService.create(request).subscribe({
         next: (response) => {
           if (response.success) {
@@ -184,25 +176,19 @@ export class LabAreasComponent implements OnInit {
     }
   }
 
-  viewExamenes(area: LabArea): void {
-    this.router.navigate(['/examenes'], {
-      queryParams: { areaId: area.id, areaCodigo: area.codigo }
-    });
+  viewExamenes(area: any): void {
+    this.router.navigate(['configuraciones/examenes', area.id]);
   }
 
+  
   changePage(page: number): void {
-    if (page >= 0 && page < this.totalPages) {
-      this.currentPage = page;
-      this.loadAreas();
-    }
-  }
-
-  changePageSize(): void {
-    this.currentPage = 0;
+    this.currentPage = page;
     this.loadAreas();
   }
 
-  get pages(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i);
+  changePageSize(newSize: number): void {
+    this.pageSize = newSize;
+    this.currentPage = 0;
+    this.loadAreas();
   }
 }

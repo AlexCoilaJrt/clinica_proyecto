@@ -9,6 +9,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.pe.laboratorio.examtype.entity.ExamType;
+import com.pe.laboratorio.examtype.repository.ExamTypeRepository;
 import com.pe.laboratorio.permissions.entity.Permission;
 import com.pe.laboratorio.permissions.repository.PermissionRepository;
 import com.pe.laboratorio.roles.entity.Role;
@@ -32,6 +34,7 @@ public class DataInitializer implements CommandLineRunner {
         private final RoleRepository roleRepository;
         private final DatosPersonalesRepository datosPersonalesRepository;
         private final PasswordEncoder passwordEncoder;
+        private final ExamTypeRepository examTypeRepository;
 
         @Override
         public void run(String... args) {
@@ -59,6 +62,13 @@ public class DataInitializer implements CommandLineRunner {
                 } else {
                         log.info("✓ Users already exist. Skipping creation.");
                         log.info("   ℹ️  Total users in database: {}", datosPersonalesRepository.count());
+                }
+                // NUEVO: Crear tipos de examen
+                if (examTypeRepository.count() == 0) {
+                        createExamTypes();
+                } else {
+                        log.info("✓ Exam types already exist. Skipping creation.");
+                        log.info("   ℹ️  Total exam types in database: {}", examTypeRepository.count());
                 }
 
                 log.info("");
@@ -551,5 +561,28 @@ public class DataInitializer implements CommandLineRunner {
                 log.info("║  🧬 biologo     / bio123    → BIOLOGO                        ║");
                 log.info("╚════════════════════════════════════════════════════════════════╝");
                 log.info("");
+        }
+
+        private void createExamTypes() {
+                log.info("📊 Creating exam types...");
+
+                List<ExamType> examTypes = Arrays.asList(
+                                createExamType("CUANTITATIVO", "Resultados numéricos con valores de referencia"),
+                                createExamType("CUALITATIVO",
+                                                "Resultados descriptivos (Positivo/Negativo, Reactivo/No Reactivo)"),
+                                createExamType("TEXTO", "Resultados interpretativos en texto libre"),
+                                createExamType("IMAGEN", "Resultados en formato de imagen (PAP, Radiografías, etc.)"),
+                                createExamType("PANEL", "Conjunto de exámenes agrupados (Perfiles)"));
+
+                examTypeRepository.saveAll(examTypes);
+                log.info("✅ Created {} exam types", examTypes.size());
+        }
+
+        private ExamType createExamType(String nombre, String descripcion) {
+                return ExamType.builder()
+                                .nombre(nombre)
+                                .descripcion(descripcion)
+                                .active(true)
+                                .build();
         }
 }

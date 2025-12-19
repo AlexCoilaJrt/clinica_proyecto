@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { filter } from 'rxjs/operators';
+import { SidebarService } from './sidebar.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -33,8 +34,8 @@ export class SidebarComponent implements OnInit {
   rutaActual: string = '';
   usuarioActual: string = 'Usuario';
   userGender: string = 'null';
-  bien: string = 'null';
-  constructor(private router: Router) {
+    bien: string = 'null';
+  constructor(private router: Router, public sidebarService: SidebarService) {
     // Escuchar cambios de ruta
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
@@ -55,7 +56,6 @@ export class SidebarComponent implements OnInit {
       try {
         const user = JSON.parse(userStorage);
         this.usuarioActual = user.firstName + ' ' + (user.lastName || '');
-        console.log('Usuario cargado en sidebar:', this.usuarioActual);
         this.userGender = user.sexo || 'null';
       } catch (e) {
         this.usuarioActual = 'Usuario';

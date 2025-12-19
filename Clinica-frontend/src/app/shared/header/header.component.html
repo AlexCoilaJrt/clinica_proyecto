@@ -1,6 +1,12 @@
 <header class="bg-white border-b-4 border-orange-400">
     <div class="px-6 py-4 flex items-center justify-between">
         <img src="/Logo.png" alt="Logo Laboratorio" class="w-[203px] h-[52px] mr-2">
+        <button (click)="sidebarService.toggle()" 
+                class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 md:hidden transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+        </button>
         <div class="flex items-center space-x-6">
             <!-- Contador de sesión con colores dinámicos -->
             <span class="text-sm">

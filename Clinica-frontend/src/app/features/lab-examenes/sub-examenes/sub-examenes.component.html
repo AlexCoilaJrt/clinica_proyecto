@@ -1,0 +1,301 @@
+<!-- Header Component -->
+<app-header></app-header>
+
+<div class="min-h-screen bg-linear-to-br from-gray-50 to-blue-50 flex">
+    <app-sidebar></app-sidebar>
+
+    <div class="flex-1 p-4 md:p-8 min-w-0">
+<div class="min-h-screen bg-gray-50 p-6">
+    <!-- Breadcrumb -->
+    <div class="flex items-center justify-between text-sm text-gray-600 mb-4">
+        <button (click)="goBack()" class="flex items-center text-blue-600 hover:text-blue-800 font-medium">
+            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Volver a Exámenes
+        </button>
+
+        <div class="flex items-center">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <a href="#" class="text-blue-600 hover:underline">Configuración</a>
+            <span class="mx-2">/</span>
+            <span class="text-gray-800">Subexámenes</span>
+        </div>
+    </div>
+
+    <!-- Card Container -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+
+        <!-- Header -->
+        <div class="bg-white border-b border-gray-200 px-6 py-4">
+            <h2 class="text-2xl font-semibold text-gray-800 text-center">
+                EXAMEN: {{ examenNombre }}
+            </h2>
+        </div>
+
+        <!-- Subheader -->
+        <div class="bg-blue-50 px-6 py-3 border-b border-blue-200">
+            <h3 class="text-xl font-semibold text-blue-800 text-center">SUBEXÁMENES</h3>
+        </div>
+
+        <!-- Body -->
+        <div class="p-6">
+
+            <!-- Botón Añadir y Ayuda -->
+            <div class="flex justify-between items-center mb-4">
+                <div class="text-sm text-gray-600 italic">
+                    💡 Puede arrastrar y soltar los subexámenes para cambiar su orden de visualización
+                </div>
+                <button (click)="openCreateModal()"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-2.5 rounded-lg flex items-center gap-2 transition-colors duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Añadir Subexamen
+                </button>
+            </div>
+
+            <!-- Tabla con Drag & Drop -->
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-blue-100 border-b border-blue-200">
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700" style="width: 50px">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 8h16M4 16h16" />
+                                </svg>
+                            </th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700" style="width: 60px">#
+                            </th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700" style="width: 100px">
+                                CÓDIGO</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">NOMBRE</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700" style="width: 120px">
+                                TIPO</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700" style="width: 100px">
+                                UNIDAD</th>
+                            <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700" style="width: 120px">
+                                OPCIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" cdkDropList (cdkDropListDropped)="drop($event)">
+                        <tr *ngFor="let subExam of subExams; let i = index" cdkDrag
+                            class="hover:bg-gray-50 transition-colors duration-150 cursor-move">
+
+                            <!-- Icono de arrastrar -->
+                            <td class="px-4 py-3 text-center text-gray-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6h16M4 12h16M4 18h16" />
+                                </svg>
+                            </td>
+
+                            <td class="px-4 py-3 text-sm text-gray-700">{{ subExam.ordenVisualizacion }}</td>
+                            <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ subExam.codigo }}</td>
+                            <td class="px-4 py-3 text-sm font-medium">{{ subExam.nombre }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-600">
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+                                    {{ getTipoResultadoLabel(subExam.tipoResultado) }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-600">
+                                {{ subExam.unidadMedida || '-' }}
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <div class="flex justify-center gap-2">
+                                    <button (click)="openEditModal(subExam)"
+                                        class="bg-yellow-400 hover:bg-yellow-500 text-white p-2 rounded transition-colors duration-150"
+                                        title="Editar">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </button>
+
+                                    <button (click)="deleteSubExam(subExam)"
+                                        class="bg-red-500 hover:bg-red-600 text-white p-2 rounded transition-colors duration-150"
+                                        title="Eliminar">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Sin resultados -->
+                        <tr *ngIf="subExams.length === 0">
+                            <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                                No se encontraron subexámenes. Agregue el primero haciendo clic en "Añadir Subexamen"
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+
+
+                <div class="relative w-full">
+                    <div class="overflow-x-auto pb-4 scrollbar-thin custom-scrollbar">
+                        <div class="inline-block min-w-full align-middle">
+                            <app-tabla-general [datos]="subExams" [currentPage]="currentPage" [columnas]="columnassubexam"
+                                (onEdit)="openEditModal($event)" (onDelete)="deleteSubExam($event)"
+                               >
+                            </app-tabla-general>
+                        </div>
+                    </div>
+                </div>
+
+<!-- Modal Crear/Editar Subexamen -->
+<div *ngIf="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full p-6">
+
+        <!-- Header Modal -->
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold text-gray-800">
+                {{ isEditMode ? 'Editar Subexamen' : 'Añadir Subexamen' }}
+            </h3>
+            <button (click)="closeModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Form -->
+        <form (ngSubmit)="saveSubExam()">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <!-- Código -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Código <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" [(ngModel)]="formData.codigo" name="codigo" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Ej: HB001" maxlength="20">
+                </div>
+
+                <!-- Nombre -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Nombre <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" [(ngModel)]="formData.nombre" name="nombre" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Ej: HEMOGLOBINA" maxlength="200">
+                </div>
+
+                <!-- Tipo de Resultado -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Tipo de Resultado <span class="text-red-500">*</span>
+                    </label>
+                    <select [(ngModel)]="formData.tipoResultado" name="tipoResultado" required
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option *ngFor="let tipo of tiposResultado" [value]="tipo">
+                            {{ getTipoResultadoLabel(tipo) }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Unidad de Medida -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Unidad de Medida
+                    </label>
+                    <input type="text" [(ngModel)]="formData.unidadMedida" name="unidadMedida"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Ej: g/dL" maxlength="50">
+                </div>
+
+                <!-- Valor Mínimo -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Valor Mínimo Normal
+                    </label>
+                    <input type="number" [(ngModel)]="formData.valorMinimo" name="valorMinimo" step="0.01"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="12.0">
+                </div>
+
+                <!-- Valor Máximo -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Valor Máximo Normal
+                    </label>
+                    <input type="number" [(ngModel)]="formData.valorMaximo" name="valorMaximo" step="0.01"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="16.0">
+                </div>
+
+                <!-- Valor Crítico Mín -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Valor Crítico Mínimo
+                    </label>
+                    <input type="number" [(ngModel)]="formData.valorCriticoMin" name="valorCriticoMin" step="0.01"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="7.0">
+                </div>
+
+                <!-- Valor Crítico Máx -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Valor Crítico Máximo
+                    </label>
+                    <input type="number" [(ngModel)]="formData.valorCriticoMax" name="valorCriticoMax" step="0.01"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="20.0">
+                </div>
+
+                <!-- Orden de Visualización -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Orden de Visualización <span class="text-red-500">*</span>
+                    </label>
+                    <input type="number" [(ngModel)]="formData.ordenVisualizacion" name="ordenVisualizacion" required
+                        min="1"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="1">
+                </div>
+
+                <!-- Observaciones (col-span-2) -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Observaciones
+                    </label>
+                    <textarea [(ngModel)]="formData.observaciones" name="observaciones" rows="3"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Observaciones adicionales..." maxlength="500"></textarea>
+                </div>
+
+            </div>
+
+            <!-- Botones -->
+            <div class="flex justify-end gap-3 mt-6">
+                <button type="button" (click)="closeModal()"
+                    class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                    Cancelar
+                </button>
+                <button type="submit"
+                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                    {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
