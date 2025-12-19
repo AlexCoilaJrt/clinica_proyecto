@@ -40,7 +40,7 @@ public class Session {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id_personal", nullable = false)
     private DatosPersonales user;
 
     @Column(name = "session_token", unique = true, nullable = false, columnDefinition = "TEXT")

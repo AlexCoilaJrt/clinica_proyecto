@@ -1,7 +1,7 @@
 package com.pe.laboratorio.orders.service.impl;
 
-import com.pe.laboratorio.catalogs.entity.Exam;
-import com.pe.laboratorio.catalogs.repository.ExamRepository;
+import com.pe.laboratorio.exam.entity.Exam;
+import com.pe.laboratorio.exam.repository.ExamRepository;
 import com.pe.laboratorio.exception.ResourceNotFoundException;
 import com.pe.laboratorio.orders.dto.OrdenCreateDTO;
 import com.pe.laboratorio.orders.dto.OrdenFilterDTO;
@@ -293,7 +293,7 @@ public class OrdenServiceImpl implements OrdenService {
         return OrdenResponseDTO.OrdenDetalleDTO.builder()
                 .id(detalle.getId())
                 .examId(detalle.getExam().getId())
-                .examName(detalle.getExam().getName())
+                .examName(detalle.getExam().getNombre())
                 .equipoId(detalle.getEquipoId())
                 .estado(detalle.getEstado() != null ? detalle.getEstado().name() : null)
                 .resultado(detalle.getResultado())

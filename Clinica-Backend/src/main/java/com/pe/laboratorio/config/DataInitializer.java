@@ -57,12 +57,9 @@ public class DataInitializer implements CommandLineRunner {
                         log.info("   ℹ️  Total roles in database: {}", roleRepository.count());
                 }
 
-                if (datosPersonalesRepository.count() == 0) {
-                        createDefaultUsers();
-                } else {
-                        log.info("✓ Users already exist. Skipping creation.");
-                        log.info("   ℹ️  Total users in database: {}", datosPersonalesRepository.count());
-                }
+                // Always check and ensure default users exist
+                ensureDefaultUsers();
+
                 // NUEVO: Crear tipos de examen
                 if (examTypeRepository.count() == 0) {
                         createExamTypes();
@@ -476,91 +473,71 @@ public class DataInitializer implements CommandLineRunner {
                                 .orElseThrow(() -> new RuntimeException("Permission not found: " + name));
         }
 
-        private void createDefaultUsers() {
+        private void ensureDefaultUsers() {
                 log.info("┌────────────────────────────────────────────────────────────────┐");
-                log.info("│  👤 CREATING DEFAULT USERS                                     │");
+                log.info("│  👤 ENSURING DEFAULT USERS EXIST                               │");
                 log.info("└────────────────────────────────────────────────────────────────┘");
                 log.info("");
 
                 // Usuario Administrador
-                log.info("👨‍💼 Creating ADMIN user...");
-                Role adminRole = roleRepository.findByName("ADMINISTRADOR")
-                                .orElseThrow(() -> new RuntimeException("Role ADMINISTRADOR not found"));
-
-                DatosPersonales admin = DatosPersonales.builder()
-                                .login("admin")
-                                .email("admin@laboratorio.com")
-                                .passwd(passwordEncoder.encode("admin123"))
-                                .nombre("Admin")
-                                .apepat("Sistema")
-                                .fonLocal("999999999")
-                                .active(true)
-                                .roles(new HashSet<>(Arrays.asList(adminRole)))
-                                .build();
-
-                datosPersonalesRepository.save(admin);
-                log.info("   ✓ Username: admin");
-                log.info("   ✓ Password: admin123");
-                log.info("   ✓ Role: ADMINISTRADOR");
-                log.info("   ✅ Admin user created successfully");
-                log.info("");
+                ensureUser("admin", "admin@laboratorio.com", "admin123", "Admin", "Sistema", "Admin", "ADMINISTRADOR");
 
                 // Usuario Tecnólogo
-                log.info("🔬 Creating TECNOLOGO user...");
-                Role tecRole = roleRepository.findByName("TECNOLOGO_MEDICO")
-                                .orElseThrow(() -> new RuntimeException("Role TECNOLOGO_MEDICO not found"));
-
-                DatosPersonales tecnologo = DatosPersonales.builder()
-                                .login("tecnologo")
-                                .email("tecnologo@laboratorio.com")
-                                .passwd(passwordEncoder.encode("tec123"))
-                                .nombre("Juan")
-                                .apepat("Pérez")
-                                .apemat("García")
-                                .fonLocal("987654321")
-                                .active(true)
-                                .roles(new HashSet<>(Arrays.asList(tecRole)))
-                                .build();
-
-                datosPersonalesRepository.save(tecnologo);
-                log.info("   ✓ Username: tecnologo");
-                log.info("   ✓ Password: tec123");
-                log.info("   ✓ Role: TECNOLOGO_MEDICO");
-                log.info("   ✅ Tecnologo user created successfully");
-                log.info("");
+                ensureUser("tecnologo", "tecnologo@laboratorio.com", "tec123", "Juan", "Pérez", "Garcia",
+                                "TECNOLOGO_MEDICO");
 
                 // Usuario Biólogo
-                log.info("🧬 Creating BIOLOGO user...");
-                Role bioRole = roleRepository.findByName("BIOLOGO")
-                                .orElseThrow(() -> new RuntimeException("Role BIOLOGO not found"));
+                ensureUser("biologo", "biologo@laboratorio.com", "bio123", "María", "García", "Lopez", "BIOLOGO");
 
-                DatosPersonales biologo = DatosPersonales.builder()
-                                .login("biologo")
-                                .email("biologo@laboratorio.com")
-                                .passwd(passwordEncoder.encode("bio123"))
-                                .nombre("María")
-                                .apepat("García")
-                                .apemat("López")
-                                .fonLocal("987654322")
-                                .active(true)
-                                .roles(new HashSet<>(Arrays.asList(bioRole)))
-                                .build();
-
-                datosPersonalesRepository.save(biologo);
-                log.info("   ✓ Username: biologo");
-                log.info("   ✓ Password: bio123");
-                log.info("   ✓ Role: BIOLOGO");
-                log.info("   ✅ Biologo user created successfully");
                 log.info("");
+        }
 
-                log.info("╔════════════════════════════════════════════════════════════════╗");
-                log.info("║  🎉 DEFAULT USERS SUMMARY                                     ║");
-                log.info("╠════════════════════════════════════════════════════════════════╣");
-                log.info("║  👨‍💼 admin       / admin123  → ADMINISTRADOR                   ║");
-                log.info("║  🔬 tecnologo   / tec123    → TECNOLOGO_MEDICO               ║");
-                log.info("║  🧬 biologo     / bio123    → BIOLOGO                        ║");
-                log.info("╚════════════════════════════════════════════════════════════════╝");
-                log.info("");
+        private void ensureUser(String username, String email, String rawPassword, String nombre, String apepat,
+                        String apemat,
+                        String roleName) {
+                log.info("Checking user: {}...", username);
+
+                datosPersonalesRepository.findByLogin(username).ifPresentOrElse(
+                                user -> {
+                                        log.info("   ✓ User {} already exists. Updating data...", username);
+                                        user.setPasswd(passwordEncoder.encode(rawPassword));
+                                        user.setNombre(nombre);
+                                        user.setApepat(apepat);
+                                        user.setApemat(apemat);
+                                        user.setActive(true);
+                                        user.setSexo("M"); // Default to M
+
+                                        // Garantizar que tenga el rol (si no lo tiene se agrega)
+                                        Role role = roleRepository.findByName(roleName)
+                                                        .orElseThrow(() -> new RuntimeException(
+                                                                        "Role " + roleName + " not found"));
+                                        user.getRoles().add(role);
+                                        datosPersonalesRepository.save(user);
+                                        log.info("   ✓ User updated: {}", username);
+                                },
+                                () -> {
+                                        log.info("   Ops! User {} not found. Creating...", username);
+                                        Role role = roleRepository.findByName(roleName)
+                                                        .orElseThrow(() -> new RuntimeException(
+                                                                        "Role " + roleName + " not found"));
+
+                                        DatosPersonales newUser = DatosPersonales.builder()
+                                                        .idPersonal(System.currentTimeMillis()) // Use millis for safer
+                                                                                                // range
+                                                        .login(username)
+                                                        .email(email)
+                                                        .passwd(passwordEncoder.encode(rawPassword))
+                                                        .nombre(nombre)
+                                                        .apepat(apepat)
+                                                        .apemat(apemat)
+                                                        .active(true)
+                                                        .sexo("M") // Default
+                                                        .roles(new HashSet<>(Arrays.asList(role)))
+                                                        .build();
+
+                                        datosPersonalesRepository.save(newUser);
+                                        log.info("   ✅ Created user: {} / {}", username, rawPassword);
+                                });
         }
 
         private void createExamTypes() {

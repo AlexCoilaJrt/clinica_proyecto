@@ -1,6 +1,6 @@
 package com.pe.laboratorio.orders.entity;
 
-import com.pe.laboratorio.catalogs.entity.Exam;
+import com.pe.laboratorio.exam.entity.Exam;
 import com.pe.laboratorio.users.entity.DatosPersonales;
 import jakarta.persistence.*;
 import lombok.*;

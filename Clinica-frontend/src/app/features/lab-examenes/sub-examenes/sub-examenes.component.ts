@@ -7,12 +7,12 @@ import { SubExam, SubExamRequest, TipoResultado } from '../../../models/exam.mod
 import { ExamService } from '../../../services/exam.service';
 import { HeaderComponent } from "../../../shared/header/header.component";
 import { SidebarComponent } from "../../../shared/sidebar/sidebar.component";
-import { Columna, TablaGeneralComponent } from "../../../shared/components/tabla-general/tabla-general.component";
+import { Columna } from "../../../shared/components/tabla-general/tabla-general.component";
 
 @Component({
     selector: 'app-sub-examenes',
     standalone: true,
-    imports: [CommonModule, FormsModule, DragDropModule, HeaderComponent, SidebarComponent, TablaGeneralComponent],
+    imports: [CommonModule, FormsModule, DragDropModule, HeaderComponent, SidebarComponent],
     templateUrl: './sub-examenes.component.html',
     styleUrls: ['./sub-examenes.component.css']
 })

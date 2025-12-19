@@ -106,75 +106,82 @@ public class AuthService {
         }
 
         // 3. CARGAR USUARIO CON ROLES Y PERMISOS
-        DatosPersonales user = datosPersonalesRepository.findByLoginWithRoles(request.getUsername())
-                .orElseThrow(() -> {
-                    securityMonitorService.registerFailedAttempt(
-                            request.getUsername(),
-                            ipAddress,
-                            userAgent,
-                            FailureReason.USER_NOT_FOUND);
-                    return new AuthException("Usuario no encontrado");
-                });
-
-        // 4. VERIFICAR SI LA CUENTA ESTÁ ACTIVA
-        if (!user.getActive()) {
-            log.warn("Attempt to login with inactive account: {}", request.getUsername());
-            securityMonitorService.registerFailedAttempt(
-                    request.getUsername(),
-                    ipAddress,
-                    userAgent,
-                    FailureReason.ACCOUNT_BLOCKED);
-            throw new AuthException("La cuenta ha sido bloqueada. Contacte al administrador.");
-        }
-
-        // Actualizar último login
-        user.setLastLogin(LocalDateTime.now());
-        datosPersonalesRepository.save(user);
-
-        // 5. REGISTRAR SESIÓN EXITOSA
-        String token = jwtService.generateToken(user);
-        securityMonitorService.registerSuccessfulLogin(user, ipAddress, userAgent, token);
-
-        // Auditoría
-        // Auditoría
         try {
-            auditService.logAction(
-                    "LOGIN",
-                    "LOGIN_SUCCESS",
-                    "Usuario " + user.getUsername() + " ha iniciado sesión exitosamente.",
-                    user.getUsername(),
-                    user.getId(),
-                    ipAddress,
-                    "Éxito",
-                    userAgent,
-                    "/api/auth/login",
-                    "POST");
+            DatosPersonales user = datosPersonalesRepository.findByLoginWithRoles(request.getUsername())
+                    .orElseThrow(() -> {
+                        securityMonitorService.registerFailedAttempt(
+                                request.getUsername(),
+                                ipAddress,
+                                userAgent,
+                                FailureReason.USER_NOT_FOUND);
+                        return new AuthException("Usuario no encontrado");
+                    });
+
+            // 4. VERIFICAR SI LA CUENTA ESTÁ ACTIVA
+            if (!user.getActive()) {
+                log.warn("Attempt to login with inactive account: {}", request.getUsername());
+                securityMonitorService.registerFailedAttempt(
+                        request.getUsername(),
+                        ipAddress,
+                        userAgent,
+                        FailureReason.ACCOUNT_BLOCKED);
+                throw new AuthException("La cuenta ha sido bloqueada. Contacte al administrador.");
+            }
+
+            // Actualizar último login
+            user.setLastLogin(LocalDateTime.now());
+            datosPersonalesRepository.save(user);
+
+            // 5. REGISTRAR SESIÓN EXITOSA
+            log.info("Generating token for user: {}", user.getUsername());
+            String token = jwtService.generateToken(user);
+            log.info("Token generated successfully");
+
+            securityMonitorService.registerSuccessfulLogin(user, ipAddress, userAgent, token);
+
+            // Auditoría
+            try {
+                auditService.logAction(
+                        "LOGIN",
+                        "LOGIN_SUCCESS",
+                        "Usuario " + user.getUsername() + " ha iniciado sesión exitosamente.",
+                        user.getUsername(),
+                        user.getId(),
+                        ipAddress,
+                        "Éxito",
+                        userAgent,
+                        "/api/auth/login",
+                        "POST");
+            } catch (Exception e) {
+                log.error("Error logging audit for login", e);
+            }
+
+            // Obtener nombres de roles
+            Set<String> roleNames = user.getRoles().stream()
+                    .map(Role::getName)
+                    .collect(Collectors.toSet());
+
+            // Obtener nombres de permisos
+            Set<String> permissions = user.getPermissionNames();
+
+            log.info("User {} logged in successfully with roles: {}", user.getUsername(), roleNames);
+
+            return LoginResponse.builder()
+                    .token(token)
+                    .type("Bearer")
+                    .userId(user.getId())
+                    .username(user.getUsername())
+                    .email(user.getEmail())
+                    .firstName(user.getNombre())
+                    .sexo(user.getSexo())
+                    .lastName(user.getApepat() + " " + user.getApemat())
+                    .roles(roleNames)
+                    .permissions(permissions)
+                    .build();
         } catch (Exception e) {
-            log.error("Error logging audit for login", e);
+            log.error("CRITICAL UNEXPECTED ERROR during login flow for user: " + request.getUsername(), e);
+            throw e; // Rethrow to let global handler catch it or return 500
         }
-
-        // Obtener nombres de roles
-        Set<String> roleNames = user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
-
-        // Obtener nombres de permisos
-        Set<String> permissions = user.getPermissionNames();
-
-        log.info("User {} logged in successfully with roles: {}", user.getUsername(), roleNames);
-
-        return LoginResponse.builder()
-                .token(token)
-                .type("Bearer")
-                .userId(user.getId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .firstName(user.getNombre())
-                .sexo(user.getSexo())
-                .lastName(user.getApepat() + " " + user.getApemat())
-                .roles(roleNames)
-                .permissions(permissions)
-                .build();
     }
 
     /**
